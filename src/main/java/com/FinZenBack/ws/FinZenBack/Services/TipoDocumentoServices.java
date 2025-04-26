@@ -1,6 +1,6 @@
 package com.FinZenBack.ws.FinZenBack.Services;
 
-import com.FinZenBack.ws.FinZenBack.models.TipoDocumento;
+import com.FinZenBack.ws.FinZenBack.models.Entities.TipoDocumento;
 import com.FinZenBack.ws.FinZenBack.repository.TipoDocumentoRepository;
 import org.springframework.stereotype.Service;
 

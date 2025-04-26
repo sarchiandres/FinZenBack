@@ -1,4 +1,4 @@
-package com.FinZenBack.ws.FinZenBack.models;
+package com.FinZenBack.ws.FinZenBack.models.Entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -6,27 +6,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "TIPO_DOCUMENTO")
-public class TipoDocumento {
+@Table(name = "TIPO_USUARIO")
+public class TipoUsuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_tipodocumento")
-    private long id_tipodocumento;
+    @Column(name = "id_tipousuario")
+    private long id_tipousuario;
 
-    @Column(name = "nombre", length = 50, nullable = false)
+    @Column(name = "nombre", length = 100, nullable = false)
     private String nombre;
 
-    @OneToMany(mappedBy = "tipoDocumento", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "tipoUsuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Usuario> usuarios = new ArrayList<>();
 
     // Getters y setters
-    public long getId_tipodocumento() {
-        return id_tipodocumento;
+    public long getId_tipousuario() {
+        return id_tipousuario;
     }
 
-    public void setId_tipodocumento(long id_tipodocumento) {
-        this.id_tipodocumento = id_tipodocumento;
+    public void setId_tipousuario(long id_tipousuario) {
+        this.id_tipousuario = id_tipousuario;
     }
 
     public String getNombre() {

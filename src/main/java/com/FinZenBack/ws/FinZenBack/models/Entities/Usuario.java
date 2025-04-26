@@ -1,4 +1,4 @@
-package com.FinZenBack.ws.FinZenBack.models;
+package com.FinZenBack.ws.FinZenBack.models.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;

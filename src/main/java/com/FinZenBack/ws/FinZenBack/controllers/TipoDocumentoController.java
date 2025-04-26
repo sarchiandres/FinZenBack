@@ -1,7 +1,7 @@
 package com.FinZenBack.ws.FinZenBack.controllers;
 
 import com.FinZenBack.ws.FinZenBack.Services.TipoDocumentoServices;
-import com.FinZenBack.ws.FinZenBack.models.TipoDocumento;
+import com.FinZenBack.ws.FinZenBack.models.Entities.TipoDocumento;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

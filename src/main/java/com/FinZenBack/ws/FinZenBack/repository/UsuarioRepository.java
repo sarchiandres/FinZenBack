@@ -1,6 +1,6 @@
 package com.FinZenBack.ws.FinZenBack.repository;
 
-import com.FinZenBack.ws.FinZenBack.models.Usuario;
+import com.FinZenBack.ws.FinZenBack.models.Entities.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
