@@ -3,6 +3,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import models.Entities.Usuario;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -41,7 +42,7 @@ public class Meta {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
     @JsonBackReference
-    private Persona usuario;
+    private Usuario usuario;
 
     //Getters and Setters
 
@@ -110,11 +111,11 @@ public class Meta {
         this.valor = valor;
     }
 
-    public Persona getUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(Persona usuario) {
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 }
