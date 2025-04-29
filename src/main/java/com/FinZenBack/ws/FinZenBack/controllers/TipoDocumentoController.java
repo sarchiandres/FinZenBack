@@ -10,13 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/FinZen/TipoD")
+@RequestMapping("/finzen/TipoD")
 public class TipoDocumentoController {
     private final TipoDocumentoServices TDservices;
 
     public TipoDocumentoController(TipoDocumentoServices tDservices) {
         TDservices = tDservices;
     }
+
+    // metodo para listar el tipo de documnetos
 
     @GetMapping
     public ResponseEntity<List<TipoDocumento>> getTipos(){

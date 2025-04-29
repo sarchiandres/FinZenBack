@@ -1,7 +1,11 @@
 package com.FinZenBack.ws.FinZenBack.models.Entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "USUARIO")
@@ -9,7 +13,7 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario")
-    private long id_usuario;
+    private long idUsuario;
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
@@ -25,7 +29,7 @@ public class Usuario {
 
     @ManyToOne
     @JoinColumn(name = "id_tipodocumento", nullable = false)
-    @JsonBackReference
+    @JsonIgnore
     private TipoDocumento tipoDocumento;
 
     @Column(name = "numero_documento", nullable = false)
@@ -33,16 +37,33 @@ public class Usuario {
 
     @ManyToOne
     @JoinColumn(name = "id_tipousuario", nullable = false)
-    @JsonBackReference
+    @JsonIgnore
     private TipoUsuario tipoUsuario;
 
+
+  ;
+
+    @OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    @JsonIgnore
+    private List<Cuenta> cuentas = new ArrayList<>();
+
+
     // Getters y setters
-    public long getId_usuario() {
-        return id_usuario;
+    public long getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setId_usuario(long id_usuario) {
-        this.id_usuario = id_usuario;
+    public void setIdUsuario(long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public List<Cuenta> getCuentas() {
+        return cuentas;
+    }
+
+    public void setCuentas(List<Cuenta> cuentas) {
+        this.cuentas = cuentas;
     }
 
     public String getNombre() {
