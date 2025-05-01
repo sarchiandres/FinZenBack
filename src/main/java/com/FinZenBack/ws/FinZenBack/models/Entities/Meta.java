@@ -11,7 +11,7 @@ import java.time.LocalDate;
 public class Meta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id_meta;
+    private long idMeta;
 
     @Column(name = "titulo" ,length = 150)
     private String titulo;
@@ -35,7 +35,7 @@ public class Meta {
 
     @Enumerated(EnumType.STRING)
     @Column(name="estado")
-    private EstadoMeta estado;
+    private EstadoMeta estado = EstadoMeta.creado;
 
     @Column(name="valor")
     private BigDecimal valor;
@@ -49,12 +49,12 @@ public class Meta {
 
 
 
-    public long getId_meta() {
-        return id_meta;
+    public long getIdMeta() {
+        return idMeta;
     }
 
-    public void setId_meta(long id_meta) {
-        this.id_meta = id_meta;
+    public void setIdMeta(long idMeta) {
+        this.idMeta = idMeta;
     }
 
     public String getTitulo() {

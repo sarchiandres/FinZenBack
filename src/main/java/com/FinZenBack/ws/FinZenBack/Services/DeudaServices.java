@@ -3,18 +3,19 @@ package com.FinZenBack.ws.FinZenBack.Services;
 import com.FinZenBack.ws.FinZenBack.models.DTO.DeudaDto;
 import com.FinZenBack.ws.FinZenBack.models.Entities.Cuenta;
 import com.FinZenBack.ws.FinZenBack.models.Entities.Deuda;
-import com.FinZenBack.ws.FinZenBack.models.Entities.Meta;
 import com.FinZenBack.ws.FinZenBack.repository.CuentaRepository;
 import com.FinZenBack.ws.FinZenBack.repository.DeudaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class DeudaServices {
 
-    @Autowired
+
     private final DeudaRepository deudaRepository;
     private final CuentaRepository cuentaRepository;
 
@@ -31,9 +32,10 @@ public class DeudaServices {
 
         miDeuda.setMonto(deudaDto.getMonto());
         miDeuda.setEstado(deudaDto.getEstado());
-        miDeuda.setFechaVencimineto(deudaDto.getFechaVencimiento());
+        miDeuda.setFechaVencimiento(deudaDto.getFechaVencimiento());
         miDeuda.setMontoPagado(deudaDto.getMontoPagado());
-        miDeuda.setCuenta(cuenta);// Asignar usuario a la meta
+        miDeuda.setCuenta(cuenta);
+        miDeuda.setFechaCreacion(LocalDateTime.now());
 
         return deudaRepository.save(miDeuda);
     }
@@ -48,18 +50,18 @@ public class DeudaServices {
 
         miDeuda.setMonto(deudaDto.getMonto());
         miDeuda.setEstado(deudaDto.getEstado());
-        miDeuda.setFechaVencimineto(deudaDto.getFechaVencimiento());
+        miDeuda.setFechaVencimiento(deudaDto.getFechaVencimiento());
         miDeuda.setMontoPagado(deudaDto.getMontoPagado());
 
         return deudaRepository.save(miDeuda);
     }
-    public void deleteMeta(long idMeta) {
+    public void deleteDeuda(long idDeuda) {
         // Verificar si la meta existe
-        if (!deudaRepository.existsById(idMeta)) {
-            throw new RuntimeException("Meta no encontrada");
+        if (!deudaRepository.existsById(idDeuda)) {
+            throw new RuntimeException("Deuda no encontrada");
         }
 
         // Eliminar la meta
-        deudaRepository.deleteById(idMeta);
+        deudaRepository.deleteById(idDeuda);
     }
 }

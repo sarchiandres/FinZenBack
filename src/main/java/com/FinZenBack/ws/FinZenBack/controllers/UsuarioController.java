@@ -1,9 +1,10 @@
 package com.FinZenBack.ws.FinZenBack.controllers;
 
-import com.FinZenBack.ws.FinZenBack.Services.UsuarioServices;
 import com.FinZenBack.ws.FinZenBack.models.DTO.UsuarioDto;
 import com.FinZenBack.ws.FinZenBack.models.Entities.Usuario;
+import com.FinZenBack.ws.FinZenBack.Services.UsuarioServices;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,8 @@ public class UsuarioController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Usuario> createUsuario(@Valid @RequestBody UsuarioDto usuario) {
-        return ResponseEntity.ok(usuarioServices.createUsuario(usuario));
+        Usuario createdUsuario = usuarioServices.createUsuario(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUsuario);
     }
 
     @GetMapping(value = "/{documento}", produces = MediaType.APPLICATION_JSON_VALUE)

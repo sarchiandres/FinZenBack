@@ -1,15 +1,25 @@
     package com.FinZenBack.ws.FinZenBack.models.DTO;
 
+    import java.math.BigDecimal;
+
     public class CuentaDto {
 
 
         private String nombre;
         private String monedaPredeterminada;
         private Long idUsuario;
+        private BigDecimal monto;
+
         // Getters y setters
 
 
+        public BigDecimal getMonto() {
+            return monto;
+        }
 
+        public void setMonto(BigDecimal monto) {
+            this.monto = monto;
+        }
 
         public Long getIdUsuario() {
             return idUsuario;

@@ -7,6 +7,7 @@ import com.FinZenBack.ws.FinZenBack.repository.CuentaRepository;
 import com.FinZenBack.ws.FinZenBack.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,10 +22,12 @@ public class CuentaService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    // Método para crear una nueva cuenta
     public Cuenta createCuenta(CuentaDto cuentaDto) {
         if (cuentaDto.getIdUsuario() == null) {
             throw new IllegalArgumentException("ID de usuario no proporcionado");
+        }
+        if (cuentaDto.getMonto() == null || cuentaDto.getMonto().compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("El monto debe ser mayor o igual a cero");
         }
 
         Usuario usuario = usuarioRepository.findById(cuentaDto.getIdUsuario())
@@ -33,8 +36,10 @@ public class CuentaService {
         Cuenta cuenta = new Cuenta();
         cuenta.setNombre(cuentaDto.getNombre());
         cuenta.setMonedaPredeterminada(cuentaDto.getMonedaPredeterminada());
+        cuenta.setMonto(cuentaDto.getMonto());
+        cuenta.setMontoOcupado(BigDecimal.ZERO);
+        cuenta.setMontoLibre(cuentaDto.getMonto());
         cuenta.setUsuario(usuario);
-        cuenta.setFechaCreacion(LocalDateTime.now());
 
         return cuentaRepository.save(cuenta);
     }
@@ -46,7 +51,7 @@ public class CuentaService {
        return cuentaRepository.findByUsuario_IdUsuario(idUsuario);
     }
 
-    // Método para actualizar una cuenta
+    // M    étodo para actualizar una cuenta
     public Cuenta updateCuenta(Long idCuenta, CuentaDto cuentaDto) {
         Cuenta cuenta = cuentaRepository.findById(idCuenta)
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));

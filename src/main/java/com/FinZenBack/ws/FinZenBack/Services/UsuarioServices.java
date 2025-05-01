@@ -1,25 +1,17 @@
 package com.FinZenBack.ws.FinZenBack.Services;
 
 import com.FinZenBack.ws.FinZenBack.models.DTO.UsuarioDto;
-import com.FinZenBack.ws.FinZenBack.models.Entities.TipoDocumento;
-import com.FinZenBack.ws.FinZenBack.models.Entities.TipoUsuario;
 import com.FinZenBack.ws.FinZenBack.models.Entities.Usuario;
-import com.FinZenBack.ws.FinZenBack.repository.TipoDocumentoRepository; // Importar el repositorio de TipoDocumento
-import com.FinZenBack.ws.FinZenBack.repository.TipoUsuarioRepository; // Importar el repositorio de TipoUsuario
 import com.FinZenBack.ws.FinZenBack.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UsuarioServices {
-    private final UsuarioRepository usuarioRepository;
-    private final TipoUsuarioRepository tipoUsuarioRepository;
-    private final TipoDocumentoRepository tipoDocumentoRepository; // Repositorio para TipoDocumento
 
+    private final  UsuarioRepository usuarioRepository;
 
-    public UsuarioServices(UsuarioRepository usuarioRepository, TipoUsuarioRepository tipoUsuarioRepository, TipoDocumentoRepository tipoDocumentoRepository) {
+    public UsuarioServices(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
-        this.tipoUsuarioRepository = tipoUsuarioRepository;
-        this.tipoDocumentoRepository = tipoDocumentoRepository;
     }
 
     public Usuario createUsuario(UsuarioDto usuarioDTO) {
@@ -29,18 +21,29 @@ public class UsuarioServices {
 
         Usuario usuario = new Usuario();
         usuario.setNombre(usuarioDTO.getNombre());
-        usuario.setApellido(usuarioDTO.getApellido());
         usuario.setCorreo(usuarioDTO.getCorreo());
         usuario.setContrasena(usuarioDTO.getContrasena());
         usuario.setNumeroDocumento(usuarioDTO.getNumeroDocumento());
+        usuario.setPaisResidencia(usuarioDTO.getPaisResidencia());
+        usuario.setIngresoMensual(usuarioDTO.getIngresoMensual());
+        usuario.setMetaActual(usuarioDTO.getMetaActual() != null ? usuarioDTO.getMetaActual() : true);
+        usuario.setNombreUsuario(usuarioDTO.getNombreUsuario());
 
-        TipoUsuario tipoUsuario = new TipoUsuario();
-        tipoUsuario.setId_tipousuario(usuarioDTO.getIdTipoUsuario());
-        usuario.setTipoUsuario(tipoUsuario);
+        // Convertir tipoDocumento de String a TipoDocumentoEnum
+        try {
+            usuario.setTipoDocumento(Usuario.TipoDocumentoEnum.valueOf(usuarioDTO.getTipoDocumento()));
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Tipo de documento inválido: " + usuarioDTO.getTipoDocumento());
+        }
 
-        TipoDocumento tipoDocumento = new TipoDocumento();
-        tipoDocumento.setId_tipodocumento(usuarioDTO.getIdTipoDocumento());
-        usuario.setTipoDocumento(tipoDocumento);
+        // Convertir tipousuario de String a TipoUsuarioEnum (puede ser null)
+        if (usuarioDTO.getTipousuario() != null) {
+            try {
+                usuario.setTipousuario(Usuario.TipoUsuarioEnum.valueOf(usuarioDTO.getTipousuario()));
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Tipo de usuario inválido: " + usuarioDTO.getTipousuario());
+            }
+        }
 
         return usuarioRepository.save(usuario);
     }
@@ -50,29 +53,40 @@ public class UsuarioServices {
                 .orElseThrow(() -> new RuntimeException("El usuario con documento " + documento + " no se encontró"));
     }
 
-    public Usuario updateUsuario(Long documento, UsuarioDto usu) {
+    public Usuario updateUsuario(Long documento, UsuarioDto usuarioDTO) {
         // Obtener el usuario existente
         Usuario usuario = getUsuarioDocumento(documento);
 
-        // Buscar el TipoUsuario a partir del ID
-        TipoUsuario tipoUsuario = tipoUsuarioRepository.findById(usu.getIdTipoUsuario())
-                .orElseThrow(() -> new RuntimeException("TipoUsuario con ID " + usu.getIdTipoUsuario() + " no encontrado"));
-
-        // Buscar el TipoDocumento a partir del ID
-        TipoDocumento tipoDocumento = tipoDocumentoRepository.findById(usu.getIdTipoDocumento())
-                .orElseThrow(() -> new RuntimeException("TipoDocumento con ID " + usu.getIdTipoDocumento() + " no encontrado"));
-
         // Actualizar los campos del usuario
-        usuario.setNombre(usu.getNombre());
-        usuario.setApellido(usu.getApellido());
-        usuario.setCorreo(usu.getCorreo());
-        usuario.setTipoUsuario(tipoUsuario);
-        usuario.setTipoDocumento(tipoDocumento);
+        usuario.setNombre(usuarioDTO.getNombre());
+        usuario.setCorreo(usuarioDTO.getCorreo());
+        usuario.setNumeroDocumento(usuarioDTO.getNumeroDocumento());
+        usuario.setPaisResidencia(usuarioDTO.getPaisResidencia());
+        usuario.setIngresoMensual(usuarioDTO.getIngresoMensual());
+        usuario.setMetaActual(usuarioDTO.getMetaActual() != null ? usuarioDTO.getMetaActual() : true);
+        usuario.setNombreUsuario(usuarioDTO.getNombreUsuario());
+
+        // Actualizar tipoDocumento
+        try {
+            usuario.setTipoDocumento(Usuario.TipoDocumentoEnum.valueOf(usuarioDTO.getTipoDocumento()));
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Tipo de documento inválido: " + usuarioDTO.getTipoDocumento());
+        }
+
+        // Actualizar tipousuario (puede ser null)
+        if (usuarioDTO.getTipousuario() != null) {
+            try {
+                usuario.setTipousuario(Usuario.TipoUsuarioEnum.valueOf(usuarioDTO.getTipousuario()));
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Tipo de usuario inválido: " + usuarioDTO.getTipousuario());
+            }
+        } else {
+            usuario.setTipousuario(null);
+        }
 
         // Guardar el usuario actualizado
         return usuarioRepository.save(usuario);
     }
-
 
     public String deleteUsuario(long documento) {
         // Obtener el usuario para eliminar

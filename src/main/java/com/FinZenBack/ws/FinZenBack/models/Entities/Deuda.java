@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="DEUDA")
@@ -28,18 +29,18 @@ public class Deuda {
     private BigDecimal montoPagado;
 
     @Column(name="fecha_vencimiento")
-    private LocalDate fechaVencimineto;
+    private LocalDate fechaVencimiento;
 
     @Column(name="estado")
     private EstadoDeuda estado;
 
      @Column(name="fecha_creacion")
-     private LocalDate fechaCreacion;
+     private LocalDateTime fechaCreacion;
 
 
     public enum EstadoDeuda {
         pendiente,
-        pagadda
+        pagada
     }
 
     public long getIdDeuda() {
@@ -74,12 +75,12 @@ public class Deuda {
         this.montoPagado = montoPagado;
     }
 
-    public LocalDate getFechaVencimineto() {
-        return fechaVencimineto;
+    public LocalDate getFechaVencimiento() {
+        return fechaVencimiento;
     }
 
-    public void setFechaVencimineto(LocalDate fechaVencimineto) {
-        this.fechaVencimineto = fechaVencimineto;
+    public void setFechaVencimiento(LocalDate fechaVencimiento) {
+        this.fechaVencimiento = fechaVencimiento;
     }
 
     public EstadoDeuda getEstado() {
@@ -90,11 +91,11 @@ public class Deuda {
         this.estado = estado;
     }
 
-    public LocalDate getFechaCreacion() {
+    public LocalDateTime getFechaCreacion() {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(LocalDate fechaCreacion) {
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
     }
 }

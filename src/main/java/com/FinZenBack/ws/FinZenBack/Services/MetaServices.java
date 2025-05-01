@@ -40,6 +40,7 @@ public class MetaServices {
     }
     public List<Meta> getMetasByIdCuenta(long id) {
         return metaRepository.findByCuentaIdCuenta(id);
+
     }
 
     public Meta updateMeta(long idMeta, MetaDto miMeta) {

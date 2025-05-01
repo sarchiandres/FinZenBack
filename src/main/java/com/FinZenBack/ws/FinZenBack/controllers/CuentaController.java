@@ -4,6 +4,7 @@ import com.FinZenBack.ws.FinZenBack.Services.CuentaService;
 import com.FinZenBack.ws.FinZenBack.models.DTO.CuentaDto;
 import com.FinZenBack.ws.FinZenBack.models.Entities.Cuenta;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +21,8 @@ public class CuentaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createCuenta( @RequestBody CuentaDto cuentaDto) {
-        cuentaService.createCuenta( cuentaDto);
+    public ResponseEntity<Cuenta> createCuenta(@RequestBody CuentaDto cuentaDto) {
+      return ResponseEntity.ok(cuentaService.createCuenta( cuentaDto));
     }
 
     @GetMapping("/{idUsuario}")
