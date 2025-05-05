@@ -51,7 +51,7 @@ public class CuentaService {
        return cuentaRepository.findByUsuario_IdUsuario(idUsuario);
     }
 
-    // M    étodo para actualizar una cuenta
+    // Método para actualizar una cuenta
     public Cuenta updateCuenta(Long idCuenta, CuentaDto cuentaDto) {
         Cuenta cuenta = cuentaRepository.findById(idCuenta)
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));

@@ -53,6 +53,11 @@
         @JsonManagedReference
         private List<Deuda> deudas = new ArrayList<>();
 
+
+        @OneToMany( mappedBy = "cuenta" ,cascade = CascadeType.ALL, orphanRemoval = true,
+        fetch = FetchType.LAZY )
+        private List<Presuspuesto> presupuestos = new ArrayList<>();
+
         // Getters y setters
 
         public long getIdCuenta() {
