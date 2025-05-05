@@ -19,7 +19,7 @@ public class CategoriaPresupuesto {
 
     @OneToMany(mappedBy = "categoria" ,cascade = CascadeType.ALL, orphanRemoval = true,
             fetch = FetchType.LAZY)
-    private List<Presuspuesto> presuspuestos = new ArrayList<>();
+    private List<Presupuesto> presuspuestos = new ArrayList<>();
 
     //Getter and Setter
 
@@ -40,11 +40,11 @@ public class CategoriaPresupuesto {
         this.nombre = nombre;
     }
 
-    public List<Presuspuesto> getPresuspuestos() {
+    public List<Presupuesto> getPresuspuestos() {
         return presuspuestos;
     }
 
-    public void setPresuspuestos(List<Presuspuesto> presuspuestos) {
+    public void setPresuspuestos(List<Presupuesto> presuspuestos) {
         this.presuspuestos = presuspuestos;
     }
 }

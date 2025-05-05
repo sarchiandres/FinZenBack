@@ -3,7 +3,7 @@ package com.FinZenBack.ws.FinZenBack.Services;
 import com.FinZenBack.ws.FinZenBack.models.DTO.PresupuestoDto;
 import com.FinZenBack.ws.FinZenBack.models.Entities.CategoriaPresupuesto;
 import com.FinZenBack.ws.FinZenBack.models.Entities.Cuenta;
-import com.FinZenBack.ws.FinZenBack.models.Entities.Presuspuesto;
+import com.FinZenBack.ws.FinZenBack.models.Entities.Presupuesto;
 import com.FinZenBack.ws.FinZenBack.repository.CategoriaPresupuestoRepository;
 import com.FinZenBack.ws.FinZenBack.repository.CuentaRepository;
 import com.FinZenBack.ws.FinZenBack.repository.PresupuestoRepository;
@@ -23,14 +23,14 @@ public class PresupuestoServices {
         this.categoriaPrepository = categoriaPrepository;
     }
 
-    public Presuspuesto createPresupuesto(PresupuestoDto presupuestoDto){
+    public Presupuesto createPresupuesto(PresupuestoDto presupuestoDto){
         Cuenta cuenta = cuentaRepository.findById(presupuestoDto.getIdCuenta())
                 .orElseThrow(()-> new RuntimeException("la cuenta no se encontro "));
 
         CategoriaPresupuesto categoria = categoriaPrepository.findById(presupuestoDto.getIdCategory())
                 .orElseThrow(()->new RuntimeException("La cateforia no se encontro"));
 
-        Presuspuesto miPresupuesto = new Presuspuesto();
+        Presupuesto miPresupuesto = new Presupuesto();
 
         miPresupuesto.setCuenta(cuenta);
         miPresupuesto.setNombre(presupuestoDto.getNombre());
@@ -40,8 +40,8 @@ public class PresupuestoServices {
         return presupuestoRepository.save(miPresupuesto);
     }
 
-    public Presuspuesto updatePresupuesto (long idPresupuesto, PresupuestoDto presupuestoDto){
-        Presuspuesto miPresuspuesto  = presupuestoRepository.findById(idPresupuesto)
+    public Presupuesto updatePresupuesto (long idPresupuesto, PresupuestoDto presupuestoDto){
+        Presupuesto miPresuspuesto  = presupuestoRepository.findById(idPresupuesto)
                 .orElseThrow(()-> new RuntimeException("El presupuesto no se encontro "));
         CategoriaPresupuesto categoria = categoriaPrepository.findById(presupuestoDto.getIdCategory())
                 .orElseThrow(()-> new RuntimeException("La categoria no se ha encontrado"));
@@ -56,7 +56,7 @@ public class PresupuestoServices {
         return presupuestoRepository.save(miPresuspuesto);
     }
 
-    public List<Presuspuesto> getPresupuestos(Long idCuenta){
+    public List<Presupuesto> getPresupuestos(Long idCuenta){
         return  presupuestoRepository.findByCuentaIdCuenta(idCuenta);
     }
 

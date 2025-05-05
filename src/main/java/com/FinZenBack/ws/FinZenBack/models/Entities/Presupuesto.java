@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "PRESUPUESTO")
-public class Presuspuesto {
+public class Presupuesto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_presupuesto")
@@ -32,13 +32,23 @@ public class Presuspuesto {
     private CategoriaPresupuesto categoria;
 
 
-    @OneToMany(mappedBy = "presuspuesto" ,cascade = CascadeType.ALL, orphanRemoval = true,
+    @OneToMany(mappedBy = "presupuesto" ,cascade = CascadeType.ALL, orphanRemoval = true,
             fetch = FetchType.LAZY)
     private List<Gasto> gastos = new ArrayList<>();
 
 
+    @OneToMany(mappedBy = "presupuesto" ,cascade = CascadeType.ALL, orphanRemoval = true,
+            fetch = FetchType.LAZY)
+    private List<Ingreso> ingresos = new ArrayList<>();
 
 
+    public List<Ingreso> getIngresos() {
+        return ingresos;
+    }
+
+    public void setIngresos(List<Ingreso> ingresos) {
+        this.ingresos = ingresos;
+    }
 
     public List<Gasto> getGastos() {
         return gastos;

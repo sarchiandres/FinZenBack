@@ -4,9 +4,11 @@ package com.FinZenBack.ws.FinZenBack.Services;
 import com.FinZenBack.ws.FinZenBack.models.DTO.CategoriaPresupuestoDto;
 import com.FinZenBack.ws.FinZenBack.models.Entities.CategoriaPresupuesto;
 import com.FinZenBack.ws.FinZenBack.repository.CategoriaPresupuestoRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class CategoriaPresupuestoServices {
 
     private final CategoriaPresupuestoRepository categoriaPrepository;

@@ -48,9 +48,9 @@ public class UsuarioServices {
         return usuarioRepository.save(usuario);
     }
 
-    public Usuario getUsuarioDocumento(long documento) {
-        return usuarioRepository.findByNumeroDocumento(documento)
-                .orElseThrow(() -> new RuntimeException("El usuario con documento " + documento + " no se encontró"));
+    public Usuario getUsuarioDocumento(long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("El usuario con documento " + id + " no se encontró"));
     }
 
     public Usuario updateUsuario(Long documento, UsuarioDto usuarioDTO) {

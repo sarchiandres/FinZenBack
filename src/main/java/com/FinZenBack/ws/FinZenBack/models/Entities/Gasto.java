@@ -10,19 +10,7 @@ import java.time.LocalDate;
 @Table(name="GASTO")
 public class Gasto {
 
-    /*
-    *CREATE TABLE GASTO (
-    id_gasto BIGINT AUTO_INCREMENT PRIMARY KEY,
-    monto DECIMAL(15,2) NOT NULL,
-    id_presupuesto BIGINT,
-    id_categoria BIGINT,
-    fecha DATE NOT NULL,
-    descripcion TEXT,
-    FOREIGN KEY (id_presupuesto) REFERENCES PRESUPUESTO(id_presupuesto) ON DELETE SET NULL,
-    FOREIGN KEY (id_categoria) REFERENCES GASTOCATEGORIA(id_categoria) ON DELETE SET NULL,
-    CHECK (monto >= 0)
-);
-    * */
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +23,7 @@ public class Gasto {
     @ManyToOne
     @JoinColumn(name="id_presupuesto",nullable = false)
     @JsonBackReference
-    private  Presuspuesto presuspuesto ;
+    private Presupuesto presupuesto;
 
     @ManyToOne
     @JoinColumn(name="id_categoria")
@@ -65,12 +53,12 @@ public class Gasto {
         this.monto = monto;
     }
 
-    public Presuspuesto getPresuspuesto() {
-        return presuspuesto;
+    public Presupuesto getPresupuesto() {
+        return presupuesto;
     }
 
-    public void setPresuspuesto(Presuspuesto presuspuesto) {
-        this.presuspuesto = presuspuesto;
+    public void setPresupuesto(Presupuesto presupuesto) {
+        this.presupuesto = presupuesto;
     }
 
     public CategoriaGasto getCategoria() {

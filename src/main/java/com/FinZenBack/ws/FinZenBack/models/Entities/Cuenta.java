@@ -56,7 +56,7 @@
 
         @OneToMany( mappedBy = "cuenta" ,cascade = CascadeType.ALL, orphanRemoval = true,
         fetch = FetchType.LAZY )
-        private List<Presuspuesto> presupuestos = new ArrayList<>();
+        private List<Presupuesto> presupuestos = new ArrayList<>();
 
         // Getters y setters
 
