@@ -1,9 +1,5 @@
 package com.FinZenBack.ws.FinZenBack.models.DTO;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
 public class UsuarioDto {
 
 
@@ -16,7 +12,7 @@ public class UsuarioDto {
     private Long ingresoMensual;
     private Boolean metaActual;
     private String nombreUsuario;
-    private String tipousuario;
+    private String tipoPersona;
 
     // Getters y setters
     public String getNombre() {
@@ -91,11 +87,11 @@ public class UsuarioDto {
         this.nombreUsuario = nombreUsuario;
     }
 
-    public String getTipousuario() {
-        return tipousuario;
+    public String getTipoPersona() {
+        return tipoPersona;
     }
 
-    public void setTipousuario(String tipousuario) {
-        this.tipousuario = tipousuario;
+    public void setTipoPersona(String tipoPersona) {
+        this.tipoPersona = tipoPersona;
     }
 }

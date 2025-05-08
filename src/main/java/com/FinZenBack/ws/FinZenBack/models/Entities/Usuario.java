@@ -3,9 +3,6 @@ package com.FinZenBack.ws.FinZenBack.models.Entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +44,14 @@ public class Usuario {
     @Column(name = "nombre_usuario")
     private String nombreUsuario;
 
-    @Column(name = "tipousuario")
+    @Column(name = "tipoPersona")
     @Enumerated(EnumType.STRING)
-    private TipoUsuarioEnum tipousuario;
+    private TipoPersonaEnum tipoPersona;
+
+    @ManyToOne
+    @JoinColumn(name = "id_tipousuario", nullable = false)
+    @JsonIgnore
+    private TipoUsuario tipoUsuario;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @ JsonIgnore
@@ -62,13 +64,22 @@ public class Usuario {
     }
 
     // Enumeración para tipousuario
-    public enum TipoUsuarioEnum {
+    public enum TipoPersonaEnum {
         padre_de_familia, joven_profesional, jubilado, personalizado
     }
+
 
     // Getters y setters
     public Long getIdUsuario() {
         return idUsuario;
+    }
+
+    public TipoUsuario getTipoUsuario() {
+        return tipoUsuario;
+    }
+
+    public void setTipoUsuario(TipoUsuario tipoUsuario) {
+        this.tipoUsuario = tipoUsuario;
     }
 
     public void setIdUsuario(Long idUsuario) {
@@ -147,12 +158,12 @@ public class Usuario {
         this.nombreUsuario = nombreUsuario;
     }
 
-    public TipoUsuarioEnum getTipousuario() {
-        return tipousuario;
+    public TipoPersonaEnum getTipoPersona() {
+        return tipoPersona;
     }
 
-    public void setTipousuario(TipoUsuarioEnum tipousuario) {
-        this.tipousuario = tipousuario;
+    public void setTipoPersona(TipoPersonaEnum tipoPersona) {
+        this.tipoPersona = tipoPersona;
     }
 
     public List<Cuenta> getCuentas() {
