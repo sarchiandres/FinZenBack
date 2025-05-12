@@ -1,5 +1,6 @@
 package com.FinZenBack.ws.FinZenBack.models.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ CREATE TABLE GASTOCATEGORIA (
 
     @OneToMany(mappedBy = "categoria" ,cascade = CascadeType.ALL, orphanRemoval = true,
             fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Gasto> gastos = new ArrayList<>();
 
 
