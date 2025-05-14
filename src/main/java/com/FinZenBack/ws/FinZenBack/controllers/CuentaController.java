@@ -3,8 +3,11 @@ package com.FinZenBack.ws.FinZenBack.controllers;
 import com.FinZenBack.ws.FinZenBack.Services.CuentaService;
 import com.FinZenBack.ws.FinZenBack.models.DTO.CuentaDto;
 import com.FinZenBack.ws.FinZenBack.models.Entities.Cuenta;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,25 +22,30 @@ public class CuentaController {
         this.cuentaService = cuentaService;
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Cuenta> createCuenta(@RequestBody CuentaDto cuentaDto) {
-      return ResponseEntity.ok(cuentaService.createCuenta( cuentaDto));
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Cuenta> createCuenta(@Valid @RequestBody CuentaDto cuentaDto) {
+        Cuenta cuenta = cuentaService.createCuenta(cuentaDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cuenta);
     }
 
-    @GetMapping("/{idUsuario}")
-    public List<Cuenta> getCuentasByUsuario(@PathVariable Long idUsuario) {
-        return cuentaService.getCuentasByUsuario(idUsuario);
+    @GetMapping(value = "/usuario/{idUsuario}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<List<Cuenta>> getCuentasByUsuario(@PathVariable Long idUsuario) {
+        return ResponseEntity.ok(cuentaService.getCuentasByUsuario(idUsuario));
     }
 
-    @PutMapping("/{idCuenta}")
-    public Cuenta updateCuenta(@PathVariable Long idCuenta, @RequestBody CuentaDto cuentaDto) {
-        return cuentaService.updateCuenta(idCuenta, cuentaDto);
+    @PutMapping(value = "/{idCuenta}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Cuenta> updateCuenta(@PathVariable Long idCuenta, @Valid @RequestBody CuentaDto cuentaDto) {
+        return ResponseEntity.ok(cuentaService.updateCuenta(idCuenta, cuentaDto));
     }
 
-    @DeleteMapping("/{idCuenta}")
+    @DeleteMapping(value = "/{idCuenta}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCuenta(@PathVariable Long idCuenta) {
+    public ResponseEntity<Void> deleteCuenta(@PathVariable Long idCuenta) {
         cuentaService.deleteCuenta(idCuenta);
+        return ResponseEntity.noContent().build();
     }
 }

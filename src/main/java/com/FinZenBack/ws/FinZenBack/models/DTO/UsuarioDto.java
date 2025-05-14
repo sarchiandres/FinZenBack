@@ -1,18 +1,46 @@
 package com.FinZenBack.ws.FinZenBack.models.DTO;
 
+import jakarta.validation.constraints.*;
+
 public class UsuarioDto {
 
-
+    @NotBlank
+    @Size(min = 3, max = 100)
     private String nombre;
+
+    @NotBlank
+    @Email
+    @Size(max = 50)
     private String correo;
+
+    @NotBlank
+    @Size(min = 6, max = 120)
     private String contrasena;
+
+    @NotNull
+    @Positive
     private Long numeroDocumento;
+
+    @NotBlank
     private String tipoDocumento;
+
+    @Size(max = 100)
     private String paisResidencia;
+
+    @NotNull
+    @PositiveOrZero
     private Long ingresoMensual;
+
+    @NotNull
     private Boolean metaActual;
+
+    @NotBlank
+    @Size(min = 3, max = 20)
     private String nombreUsuario;
+
     private String tipoPersona;
+
+    private String tipoUsuario; // Nuevo campo para especificar el rol
 
     // Getters y setters
     public String getNombre() {
@@ -93,5 +121,13 @@ public class UsuarioDto {
 
     public void setTipoPersona(String tipoPersona) {
         this.tipoPersona = tipoPersona;
+    }
+
+    public String getTipoUsuario() {
+        return tipoUsuario;
+    }
+
+    public void setTipoUsuario(String tipoUsuario) {
+        this.tipoUsuario = tipoUsuario;
     }
 }

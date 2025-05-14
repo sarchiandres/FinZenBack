@@ -5,100 +5,97 @@ import com.FinZenBack.ws.FinZenBack.models.Entities.TipoUsuario;
 import com.FinZenBack.ws.FinZenBack.models.Entities.Usuario;
 import com.FinZenBack.ws.FinZenBack.repository.TipoUsuarioRepository;
 import com.FinZenBack.ws.FinZenBack.repository.UsuarioRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UsuarioServices {
 
-    private final  UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
     private final TipoUsuarioRepository tipoUsuarioRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UsuarioServices(UsuarioRepository usuarioRepository, TipoUsuarioRepository tipoUsuarioRepository) {
+    public UsuarioServices(
+            UsuarioRepository usuarioRepository,
+            TipoUsuarioRepository tipoUsuarioRepository,
+            BCryptPasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.tipoUsuarioRepository = tipoUsuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-
-
-
-
     public Usuario createUsuario(UsuarioDto usuarioDTO) {
-        if (usuarioRepository.findByNumeroDocumento(usuarioDTO.getNumeroDocumento()).isPresent()) {
+        if (usuarioRepository.existsByNumeroDocumento(usuarioDTO.getNumeroDocumento())) {
             throw new RuntimeException("El usuario con documento " + usuarioDTO.getNumeroDocumento() + " ya existe");
-        }if(usuarioRepository.findByCorreo(usuarioDTO.getCorreo()).isPresent()){
-            throw new RuntimeException("El usuario con este correo ya exite ");
+        }
+        if (usuarioRepository.existsByCorreo(usuarioDTO.getCorreo())) {
+            throw new RuntimeException("El usuario con correo " + usuarioDTO.getCorreo() + " ya existe");
+        }
+        if (usuarioRepository.existsByNombreUsuario(usuarioDTO.getNombreUsuario())) {
+            throw new RuntimeException("El nombre de usuario " + usuarioDTO.getNombreUsuario() + " ya existe");
         }
 
         Usuario usuario = new Usuario();
         usuario.setNombre(usuarioDTO.getNombre());
         usuario.setCorreo(usuarioDTO.getCorreo());
+        usuario.setContrasena(passwordEncoder.encode(usuarioDTO.getContrasena())); // Encriptar contraseña
         usuario.setNumeroDocumento(usuarioDTO.getNumeroDocumento());
         usuario.setPaisResidencia(usuarioDTO.getPaisResidencia());
         usuario.setIngresoMensual(usuarioDTO.getIngresoMensual());
         usuario.setMetaActual(usuarioDTO.getMetaActual() != null ? usuarioDTO.getMetaActual() : true);
         usuario.setNombreUsuario(usuarioDTO.getNombreUsuario());
-        usuario.setContrasena(usuarioDTO.getContrasena());
-        usuario.setNombre(usuarioDTO.getNombre());
 
-        // Convertir tipoDocumento de String a TipoDocumentoEnum
+        // Convertir tipoDocumento
         try {
             usuario.setTipoDocumento(Usuario.TipoDocumentoEnum.valueOf(usuarioDTO.getTipoDocumento()));
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Tipo de documento inválido: " + usuarioDTO.getTipoDocumento());
         }
 
-        // Convertir tipousuario de String a TipoUsuarioEnum (puede ser null)
+        // Convertir tipoPersona
         if (usuarioDTO.getTipoPersona() != null) {
             try {
                 usuario.setTipoPersona(Usuario.TipoPersonaEnum.valueOf(usuarioDTO.getTipoPersona()));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Tipo de usuario inválido: " + usuarioDTO.getTipoPersona());
+                throw new RuntimeException("Tipo de persona inválido: " + usuarioDTO.getTipoPersona());
             }
         }
 
-        TipoUsuario tipoUsuario = tipoUsuarioRepository.findByNombre("USUARIO")
-                .orElseThrow(() -> new RuntimeException("El tipo de usuario 'USUARIO' no existe en la base de datos"));
+        // Asignar tipoUsuario
+        String tipoUsuarioNombre = usuarioDTO.getTipoUsuario() != null ? usuarioDTO.getTipoUsuario() : "USUARIO";
+        TipoUsuario tipoUsuario = tipoUsuarioRepository.findByNombre(tipoUsuarioNombre)
+                .orElseThrow(() -> new RuntimeException("El tipo de usuario '" + tipoUsuarioNombre + "' no existe"));
         usuario.setTipoUsuario(tipoUsuario);
-
 
         return usuarioRepository.save(usuario);
     }
 
-
-
-
-    public Usuario getUsuarioDocumento(long id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("El usuario con documento " + id + " no se encontró"));
+    public Usuario getUsuarioDocumento(Long documento) {
+        return usuarioRepository.findByNumeroDocumento(documento)
+                .orElseThrow(() -> new RuntimeException("El usuario con documento " + documento + " no se encontró"));
     }
 
-
-
-
-
-
     public Usuario updateUsuario(Long documento, UsuarioDto usuarioDTO) {
-        // Obtener el usuario existente
         Usuario usuario = getUsuarioDocumento(documento);
 
-        // Actualizar los campos del usuario
+        // Verificar unicidad de correo y nombreUsuario (excepto para el mismo usuario)
+        if (!usuario.getCorreo().equals(usuarioDTO.getCorreo()) && usuarioRepository.existsByCorreo(usuarioDTO.getCorreo())) {
+            throw new RuntimeException("El correo " + usuarioDTO.getCorreo() + " ya está en uso");
+        }
+        if (!usuario.getNombreUsuario().equals(usuarioDTO.getNombreUsuario()) && usuarioRepository.existsByNombreUsuario(usuarioDTO.getNombreUsuario())) {
+            throw new RuntimeException("El nombre de usuario " + usuarioDTO.getNombreUsuario() + " ya está en uso");
+        }
+
         usuario.setNombre(usuarioDTO.getNombre());
         usuario.setCorreo(usuarioDTO.getCorreo());
+        if (usuarioDTO.getContrasena() != null && !usuarioDTO.getContrasena().isEmpty()) {
+            usuario.setContrasena(passwordEncoder.encode(usuarioDTO.getContrasena())); // Encriptar si se proporciona
+        }
         usuario.setNumeroDocumento(usuarioDTO.getNumeroDocumento());
         usuario.setPaisResidencia(usuarioDTO.getPaisResidencia());
         usuario.setIngresoMensual(usuarioDTO.getIngresoMensual());
         usuario.setMetaActual(usuarioDTO.getMetaActual() != null ? usuarioDTO.getMetaActual() : true);
         usuario.setNombreUsuario(usuarioDTO.getNombreUsuario());
-        usuario.setContrasena(usuarioDTO.getContrasena());
-        usuario.setNombre(usuarioDTO.getNombre());
-
-        if (usuarioDTO.getTipoPersona() != null) {
-            try {
-                usuario.setTipoPersona(Usuario.TipoPersonaEnum.valueOf(usuarioDTO.getTipoPersona()));
-            } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Tipo de usuario inválido: " + usuarioDTO.getTipoPersona());
-            }
-        }
 
         // Actualizar tipoDocumento
         try {
@@ -107,32 +104,35 @@ public class UsuarioServices {
             throw new RuntimeException("Tipo de documento inválido: " + usuarioDTO.getTipoDocumento());
         }
 
-        // Actualizar tipousuario (puede ser null)
+        // Actualizar tipoPersona
         if (usuarioDTO.getTipoPersona() != null) {
             try {
                 usuario.setTipoPersona(Usuario.TipoPersonaEnum.valueOf(usuarioDTO.getTipoPersona()));
             } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Tipo de usuario inválido: " + usuarioDTO.getTipoPersona());
+                throw new RuntimeException("Tipo de persona inválido: " + usuarioDTO.getTipoPersona());
             }
         } else {
             usuario.setTipoPersona(null);
         }
 
-        // Guardar el usuario actualizado
+        // Actualizar tipoUsuario
+        if (usuarioDTO.getTipoUsuario() != null) {
+            TipoUsuario tipoUsuario = tipoUsuarioRepository.findByNombre(usuarioDTO.getTipoUsuario())
+                    .orElseThrow(() -> new RuntimeException("El tipo de usuario '" + usuarioDTO.getTipoUsuario() + "' no existe"));
+            usuario.setTipoUsuario(tipoUsuario);
+        }
+
         return usuarioRepository.save(usuario);
     }
 
-
-
-
-
-    public String deleteUsuario(long documento) {
-        // Obtener el usuario para eliminar
+    public String deleteUsuario(Long documento) {
         Usuario usuario = getUsuarioDocumento(documento);
-
-        // Eliminar el usuario
         usuarioRepository.delete(usuario);
-
         return "Usuario eliminado";
+    }
+
+    public Usuario getUsuarioByCorreo(String correo) {
+        return usuarioRepository.findByCorreo(correo)
+                .orElseThrow(() -> new RuntimeException("Usuario con correo " + correo + " no encontrado"));
     }
 }

@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface CategoriaPresupuestoRepository extends JpaRepository<CategoriaPresupuesto,Long> {
+public interface CategoriaPresupuestoRepository extends JpaRepository<CategoriaPresupuesto, Long> {
     Optional<CategoriaPresupuesto> findByNombre(String nombre);
 }

@@ -7,31 +7,58 @@ import com.FinZenBack.ws.FinZenBack.models.Entities.Presupuesto;
 import com.FinZenBack.ws.FinZenBack.repository.CategoriaPresupuestoRepository;
 import com.FinZenBack.ws.FinZenBack.repository.CuentaRepository;
 import com.FinZenBack.ws.FinZenBack.repository.PresupuestoRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 public class PresupuestoServices {
     private final PresupuestoRepository presupuestoRepository;
     private final CuentaRepository cuentaRepository;
-    private final CategoriaPresupuestoRepository categoriaPrepository;
+    private final CategoriaPresupuestoRepository categoriaRepository;
 
-    public PresupuestoServices(PresupuestoRepository presupuestoRepository, CuentaRepository cuentaRepository, CategoriaPresupuestoRepository categoriaPrepository) {
+    public PresupuestoServices(PresupuestoRepository presupuestoRepository, CuentaRepository cuentaRepository, CategoriaPresupuestoRepository categoriaRepository) {
         this.presupuestoRepository = presupuestoRepository;
         this.cuentaRepository = cuentaRepository;
-        this.categoriaPrepository = categoriaPrepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
-    public Presupuesto createPresupuesto(PresupuestoDto presupuestoDto){
+    @Transactional
+    public Presupuesto createPresupuesto(PresupuestoDto presupuestoDto) {
         Cuenta cuenta = cuentaRepository.findById(presupuestoDto.getIdCuenta())
-                .orElseThrow(()-> new RuntimeException("la cuenta no se encontro "));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La cuenta con ID " + presupuestoDto.getIdCuenta() + " no se encontró"));
 
-        CategoriaPresupuesto categoria = categoriaPrepository.findById(presupuestoDto.getIdCategory())
-                .orElseThrow(()->new RuntimeException("La cateforia no se encontro"));
+        // Verificar permisos
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String correoAutenticado = authentication.getName();
+        if (!correoAutenticado.equals(cuenta.getUsuario().getCorreo()) && !authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para crear un presupuesto para esta cuenta");
+        }
+
+        // Validar unicidad
+        if (presupuestoRepository.existsByNombreAndCuentaId(presupuestoDto.getNombre(), presupuestoDto.getIdCuenta())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un presupuesto con el nombre " + presupuestoDto.getNombre() + " para esta cuenta");
+        }
+
+        // Validar monto libre
+        if (cuenta.getMontoLibre().compareTo(presupuestoDto.getMontoAsignado()) < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El monto asignado excede el monto libre de la cuenta");
+        }
+
+        CategoriaPresupuesto categoria = null;
+        if (presupuestoDto.getIdCategoria() != null) {
+            categoria = categoriaRepository.findById(presupuestoDto.getIdCategoria())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La categoría con ID " + presupuestoDto.getIdCategoria() + " no se encontró"));
+        }
 
         Presupuesto miPresupuesto = new Presupuesto();
-
         miPresupuesto.setCuenta(cuenta);
         miPresupuesto.setNombre(presupuestoDto.getNombre());
         miPresupuesto.setMontoAsignado(presupuestoDto.getMontoAsignado());
@@ -40,32 +67,76 @@ public class PresupuestoServices {
         return presupuestoRepository.save(miPresupuesto);
     }
 
-    public Presupuesto updatePresupuesto (long idPresupuesto, PresupuestoDto presupuestoDto){
-        Presupuesto miPresuspuesto  = presupuestoRepository.findById(idPresupuesto)
-                .orElseThrow(()-> new RuntimeException("El presupuesto no se encontro "));
-        CategoriaPresupuesto categoria = categoriaPrepository.findById(presupuestoDto.getIdCategory())
-                .orElseThrow(()-> new RuntimeException("La categoria no se ha encontrado"));
-        Cuenta cuenta = cuentaRepository.findById(presupuestoDto.getIdCuenta())
-                .orElseThrow(()->new RuntimeException("La cuenta no se encontro"));
+    @Transactional
+    public Presupuesto updatePresupuesto(Long idPresupuesto, PresupuestoDto presupuestoDto) {
+        Presupuesto miPresupuesto = presupuestoRepository.findById(idPresupuesto)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El presupuesto con ID " + idPresupuesto + " no se encontró"));
 
-        miPresuspuesto.setCategoria(categoria);
-        miPresuspuesto.setCuenta(cuenta);
-        miPresuspuesto.setNombre(presupuestoDto.getNombre());
-        miPresuspuesto.setMontoAsignado(presupuestoDto.getMontoAsignado());
-
-        return presupuestoRepository.save(miPresuspuesto);
-    }
-
-    public List<Presupuesto> getPresupuestos(Long idCuenta){
-        return  presupuestoRepository.findByCuentaIdCuenta(idCuenta);
-    }
-
-    public void deletePresupuesto(long idPresuspuesto){
-        if (!presupuestoRepository.existsById(idPresuspuesto)) {
-            throw new RuntimeException("presupuesto  no encontrada");
+        // Verificar permisos
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String correoAutenticado = authentication.getName();
+        if (!correoAutenticado.equals(miPresupuesto.getCuenta().getUsuario().getCorreo()) && !authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para modificar este presupuesto");
         }
 
-        // Eliminar la meta
-        presupuestoRepository.deleteById(idPresuspuesto);
+        // Validar unicidad
+        if (!miPresupuesto.getNombre().equals(presupuestoDto.getNombre()) &&
+                presupuestoRepository.existsByNombreAndCuentaId(presupuestoDto.getNombre(), presupuestoDto.getIdCuenta())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe un presupuesto con el nombre " + presupuestoDto.getNombre() + " para esta cuenta");
+        }
+
+        // Validar monto libre
+        Cuenta cuenta = cuentaRepository.findById(presupuestoDto.getIdCuenta())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La cuenta con ID " + presupuestoDto.getIdCuenta() + " no se encontró"));
+        BigDecimal montoLibreAjustado = cuenta.getMontoLibre().add(miPresupuesto.getMontoAsignado());
+        if (montoLibreAjustado.compareTo(presupuestoDto.getMontoAsignado()) < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nuevo monto asignado excede el monto libre de la cuenta");
+        }
+
+        CategoriaPresupuesto categoria = null;
+        if (presupuestoDto.getIdCategoria() != null) {
+            categoria = categoriaRepository.findById(presupuestoDto.getIdCategoria())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La categoría con ID " + presupuestoDto.getIdCategoria() + " no se encontró"));
+        }
+
+        miPresupuesto.setCategoria(categoria);
+        miPresupuesto.setCuenta(cuenta);
+        miPresupuesto.setNombre(presupuestoDto.getNombre());
+        miPresupuesto.setMontoAsignado(presupuestoDto.getMontoAsignado());
+
+        return presupuestoRepository.save(miPresupuesto);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Presupuesto> getPresupuestos(Long idCuenta) {
+        Cuenta cuenta = cuentaRepository.findById(idCuenta)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La cuenta con ID " + idCuenta + " no se encontró"));
+
+        // Verificar permisos
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String correoAutenticado = authentication.getName();
+        if (!correoAutenticado.equals(cuenta.getUsuario().getCorreo()) && !authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver los presupuestos de esta cuenta");
+        }
+
+        return presupuestoRepository.findByCuentaIdCuenta(idCuenta);
+    }
+
+    @Transactional
+    public void deletePresupuesto(Long idPresupuesto) {
+        Presupuesto presupuesto = presupuestoRepository.findById(idPresupuesto)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El presupuesto con ID " + idPresupuesto + " no se encontró"));
+
+        // Verificar permisos
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String correoAutenticado = authentication.getName();
+        if (!correoAutenticado.equals(presupuesto.getCuenta().getUsuario().getCorreo()) && !authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para eliminar este presupuesto");
+        }
+
+        presupuestoRepository.deleteById(idPresupuesto);
     }
 }

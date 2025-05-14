@@ -1,48 +1,65 @@
 package com.FinZenBack.ws.FinZenBack.Services;
 
-
 import com.FinZenBack.ws.FinZenBack.models.DTO.CategoriaPresupuestoDto;
 import com.FinZenBack.ws.FinZenBack.models.Entities.CategoriaPresupuesto;
 import com.FinZenBack.ws.FinZenBack.repository.CategoriaPresupuestoRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @Service
 public class CategoriaPresupuestoServices {
 
-    private final CategoriaPresupuestoRepository categoriaPrepository;
+    private final CategoriaPresupuestoRepository categoriaRepository;
 
-    public CategoriaPresupuestoServices(CategoriaPresupuestoRepository categoriaPrepository) {
-        this.categoriaPrepository = categoriaPrepository;
+    public CategoriaPresupuestoServices(CategoriaPresupuestoRepository categoriaRepository) {
+        this.categoriaRepository = categoriaRepository;
     }
 
-    public CategoriaPresupuesto createCategoria (CategoriaPresupuestoDto categoriaDto){
-        if(categoriaPrepository.findByNombre(categoriaDto.getNombre()).isPresent()){
-            throw new RuntimeException("La categoria con el nombre "+categoriaDto.getNombre()+" ya existe");
+    @Transactional
+    public CategoriaPresupuesto createCategoria(CategoriaPresupuestoDto categoriaDto) {
+        if (categoriaDto.getNombre() == null || categoriaDto.getNombre().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nombre de la categoría es obligatorio");
         }
+        if (categoriaRepository.findByNombre(categoriaDto.getNombre()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "La categoría con el nombre " + categoriaDto.getNombre() + " ya existe");
+        }
+
         CategoriaPresupuesto categoria = new CategoriaPresupuesto();
-
         categoria.setNombre(categoriaDto.getNombre());
-        return categoriaPrepository.save(categoria);
+        return categoriaRepository.save(categoria);
     }
 
-    public CategoriaPresupuesto updateCategoria (long idCategoria,CategoriaPresupuestoDto categoriaDto){
-        CategoriaPresupuesto categoria = categoriaPrepository.findById(idCategoria)
-                .orElseThrow(()-> new RuntimeException("la categoria no se encontro"));
-
-        categoria.setNombre(categoriaDto.getNombre());
-        return categoriaPrepository.save(categoria);
-    }
-
-    public List<CategoriaPresupuesto> getCategorias(){
-        return categoriaPrepository.findAll();
-    }
-
-    public void DeleteCategoria (long idCategoria){
-        if(!categoriaPrepository.existsById(idCategoria)){
-            throw new RuntimeException("la categoria no existe");
+    @Transactional
+    public CategoriaPresupuesto updateCategoria(Long idCategoria, CategoriaPresupuestoDto categoriaDto) {
+        if (categoriaDto.getNombre() == null || categoriaDto.getNombre().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nombre de la categoría es obligatorio");
         }
-        categoriaPrepository.deleteById(idCategoria);
+        CategoriaPresupuesto categoria = categoriaRepository.findById(idCategoria)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La categoría con ID " + idCategoria + " no se encontró"));
+
+        if (!categoria.getNombre().equals(categoriaDto.getNombre()) &&
+                categoriaRepository.findByNombre(categoriaDto.getNombre()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "La categoría con el nombre " + categoriaDto.getNombre() + " ya existe");
+        }
+
+        categoria.setNombre(categoriaDto.getNombre());
+        return categoriaRepository.save(categoria);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CategoriaPresupuesto> getCategorias() {
+        return categoriaRepository.findAll();
+    }
+
+    @Transactional
+    public void DeleteCategoria(Long idCategoria) {
+        if (!categoriaRepository.existsById(idCategoria)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La categoría con ID " + idCategoria + " no existe");
+        }
+        categoriaRepository.deleteById(idCategoria);
     }
 }

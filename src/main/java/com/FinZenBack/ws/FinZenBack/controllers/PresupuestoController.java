@@ -3,8 +3,11 @@ package com.FinZenBack.ws.FinZenBack.controllers;
 import com.FinZenBack.ws.FinZenBack.Services.PresupuestoServices;
 import com.FinZenBack.ws.FinZenBack.models.DTO.PresupuestoDto;
 import com.FinZenBack.ws.FinZenBack.models.Entities.Presupuesto;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -17,23 +20,26 @@ public class PresupuestoController {
         this.presupuestoServices = presupuestoServices;
     }
 
-    @PostMapping
-    public Presupuesto crearPresupuesto(@RequestBody PresupuestoDto presupuestoDto) {
-        return presupuestoServices.createPresupuesto(presupuestoDto);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Presupuesto> crearPresupuesto(@Valid @RequestBody PresupuestoDto presupuestoDto) {
+        Presupuesto presupuesto = presupuestoServices.createPresupuesto(presupuestoDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(presupuesto);
     }
 
-    @PutMapping("/{id}")
-    public Presupuesto actualizarPresupuesto(@PathVariable Long id, @RequestBody PresupuestoDto presupuestoDto) {
-        return presupuestoServices.updatePresupuesto(id, presupuestoDto);
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Presupuesto> actualizarPresupuesto(@PathVariable Long id, @Valid @RequestBody PresupuestoDto presupuestoDto) {
+        Presupuesto presupuesto = presupuestoServices.updatePresupuesto(id, presupuestoDto);
+        return ResponseEntity.ok(presupuesto);
     }
 
-    @GetMapping("/cuenta/{idCuenta}")
-    public List<Presupuesto> listarPresupuestosPorCuenta(@PathVariable Long idCuenta) {
-        return presupuestoServices.getPresupuestos(idCuenta);
+    @GetMapping(value = "/cuenta/{idCuenta}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Presupuesto>> listarPresupuestosPorCuenta(@PathVariable Long idCuenta) {
+        return ResponseEntity.ok(presupuestoServices.getPresupuestos(idCuenta));
     }
 
-    @DeleteMapping("/{id}")
-    public void eliminarPresupuesto(@PathVariable Long id) {
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> eliminarPresupuesto(@PathVariable Long id) {
         presupuestoServices.deletePresupuesto(id);
+        return ResponseEntity.noContent().build();
     }
 }

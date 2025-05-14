@@ -1,7 +1,12 @@
 package com.FinZenBack.ws.FinZenBack.models.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -15,32 +20,33 @@ public class Presupuesto {
     @Column(name = "id_presupuesto")
     private Long idPresupuesto;
 
-    @Column(name = "nombre")
+    @NotBlank
+    @Size(min = 3, max = 100)
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @Column(name = "monto_asignado")
+    @NotNull
+    @Positive
+    @Column(name = "monto_asignado", nullable = false)
     private BigDecimal montoAsignado;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_cuenta", nullable = false)
-    @JsonIgnore
+    @JsonBackReference
     private Cuenta cuenta;
 
-    @ManyToOne
-    @JoinColumn(name = "id_categoriapresupuesto", nullable = false)
-    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_categoriapresupuesto") // Nullable
+    @JsonBackReference
     private CategoriaPresupuesto categoria;
 
-
-    @OneToMany(mappedBy = "presupuesto" ,cascade = CascadeType.ALL, orphanRemoval = true,
-            fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "presupuesto", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Gasto> gastos = new ArrayList<>();
 
-
-    @OneToMany(mappedBy = "presupuesto" ,cascade = CascadeType.ALL, orphanRemoval = true,
-            fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "presupuesto", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Ingreso> ingresos = new ArrayList<>();
-
 
     public List<Ingreso> getIngresos() {
         return ingresos;
@@ -74,20 +80,20 @@ public class Presupuesto {
         this.nombre = nombre;
     }
 
-    public Cuenta getCuenta() {
-        return cuenta;
-    }
-
-    public void setCuenta(Cuenta cuenta) {
-        this.cuenta = cuenta;
-    }
-
     public BigDecimal getMontoAsignado() {
         return montoAsignado;
     }
 
     public void setMontoAsignado(BigDecimal montoAsignado) {
         this.montoAsignado = montoAsignado;
+    }
+
+    public Cuenta getCuenta() {
+        return cuenta;
+    }
+
+    public void setCuenta(Cuenta cuenta) {
+        this.cuenta = cuenta;
     }
 
     public CategoriaPresupuesto getCategoria() {

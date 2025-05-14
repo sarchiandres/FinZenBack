@@ -1,13 +1,25 @@
 package com.FinZenBack.ws.FinZenBack.models.DTO;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
 import java.math.BigDecimal;
-import java.util.concurrent.atomic.LongAccumulator;
 
 public class PresupuestoDto {
+    @NotBlank
+    @Size(min = 3, max = 100)
     private String nombre;
+
+    @NotNull
+    @Positive
     private BigDecimal montoAsignado;
+
+    @NotNull
     private Long idCuenta;
-    private Long idCategory;
+
+    private Long idCategoria;
 
     public String getNombre() {
         return nombre;
@@ -33,11 +45,11 @@ public class PresupuestoDto {
         this.idCuenta = idCuenta;
     }
 
-    public Long getIdCategory() {
-        return idCategory;
+    public Long getIdCategoria() {
+        return idCategoria;
     }
 
-    public void setIdCategory(Long idCategory) {
-        this.idCategory = idCategory;
+    public void setIdCategoria(Long idCategoria) {
+        this.idCategoria = idCategoria;
     }
 }

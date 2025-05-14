@@ -1,28 +1,29 @@
 package com.FinZenBack.ws.FinZenBack.models.Entities;
 
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="CATEGORIAPRESUPUESTO")
+@Table(name = "CATEGORIAPRESUPUESTO")
 public class CategoriaPresupuesto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_categoriapresupuesto")
     private Long idCategoria;
 
-    @Column(name = "nombre")
+    @NotBlank
+    @Size(min = 3, max = 100)
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @OneToMany(mappedBy = "categoria" ,cascade = CascadeType.ALL, orphanRemoval = true,
-            fetch = FetchType.LAZY)
-    private List<Presupuesto> presuspuestos = new ArrayList<>();
-
-    //Getter and Setter
-
+    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Presupuesto> presupuestos = new ArrayList<>();
 
     public Long getIdCategoria() {
         return idCategoria;
@@ -40,11 +41,11 @@ public class CategoriaPresupuesto {
         this.nombre = nombre;
     }
 
-    public List<Presupuesto> getPresuspuestos() {
-        return presuspuestos;
+    public List<Presupuesto> getPresupuestos() {
+        return presupuestos;
     }
 
-    public void setPresuspuestos(List<Presupuesto> presuspuestos) {
-        this.presuspuestos = presuspuestos;
+    public void setPresupuestos(List<Presupuesto> presupuestos) {
+        this.presupuestos = presupuestos;
     }
 }

@@ -1,5 +1,7 @@
 package com.FinZenBack.ws.FinZenBack.models.Entities;
 
+
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -8,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "USUARIO")
+@Table(name = "usuario")
 public class Usuario {
 
     @Id
@@ -25,7 +27,7 @@ public class Usuario {
     @Column(name = "contrasena", nullable = false, length = 255)
     private String contrasena;
 
-    @Column(name = "numero_documento", nullable = false)
+    @Column(name = "numero_documento", nullable = false, unique = true) // Añadir unique
     private Long numeroDocumento;
 
     @Column(name = "tipo_documento", nullable = false)
@@ -41,10 +43,10 @@ public class Usuario {
     @Column(name = "meta_actual", nullable = false)
     private Boolean metaActual = true;
 
-    @Column(name = "nombre_usuario")
+    @Column(name = "nombre_usuario", unique = true)
     private String nombreUsuario;
 
-    @Column(name = "tipoPersona")
+    @Column(name = "tipo_persona")
     @Enumerated(EnumType.STRING)
     private TipoPersonaEnum tipoPersona;
 
@@ -54,32 +56,25 @@ public class Usuario {
     private TipoUsuario tipoUsuario;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ JsonIgnore
+    @JsonIgnore
     @JsonManagedReference
     private List<Cuenta> cuentas = new ArrayList<>();
 
-    // Enumeración para tipo_documento
+    // Enumeraciones y getters/setters como en tu código
+
+
+    // Enumeraciones
     public enum TipoDocumentoEnum {
         cedula, pasaporte, tarjeta_de_identidad, cedula_extranjera
     }
 
-    // Enumeración para tipousuario
     public enum TipoPersonaEnum {
         padre_de_familia, joven_profesional, jubilado, personalizado
     }
 
-
     // Getters y setters
     public Long getIdUsuario() {
         return idUsuario;
-    }
-
-    public TipoUsuario getTipoUsuario() {
-        return tipoUsuario;
-    }
-
-    public void setTipoUsuario(TipoUsuario tipoUsuario) {
-        this.tipoUsuario = tipoUsuario;
     }
 
     public void setIdUsuario(Long idUsuario) {
@@ -164,6 +159,14 @@ public class Usuario {
 
     public void setTipoPersona(TipoPersonaEnum tipoPersona) {
         this.tipoPersona = tipoPersona;
+    }
+
+    public TipoUsuario getTipoUsuario() {
+        return tipoUsuario;
+    }
+
+    public void setTipoUsuario(TipoUsuario tipoUsuario) {
+        this.tipoUsuario = tipoUsuario;
     }
 
     public List<Cuenta> getCuentas() {

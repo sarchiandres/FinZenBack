@@ -1,6 +1,5 @@
 package com.FinZenBack.ws.FinZenBack.controllers;
 
-
 import com.FinZenBack.ws.FinZenBack.models.Entities.TipoUsuario;
 import com.FinZenBack.ws.FinZenBack.models.Entities.Usuario;
 import com.FinZenBack.ws.FinZenBack.payload.LoginRequest;
@@ -19,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
