@@ -44,7 +44,7 @@ public class GastoServices {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El presupuesto con ID " + gastoDto.getIdPresupuesto() + " no se encontró"));
 
             Cuenta cuenta = presupuesto.getCuenta();
-            if (!cuentaRepository.findByIdAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
+            if (!cuentaRepository.findByIdCuentaAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
                     !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para crear un gasto en este presupuesto");
             }
@@ -79,7 +79,7 @@ public class GastoServices {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El presupuesto con ID " + idPresupuesto + " no se encontró"));
 
         Cuenta cuenta = presupuesto.getCuenta();
-        if (!cuentaRepository.findByIdAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
+        if (!cuentaRepository.findByIdCuentaAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
                 !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver los gastos de este presupuesto");
         }
@@ -98,7 +98,7 @@ public class GastoServices {
         Presupuesto presupuestoActual = gasto.getPresupuesto();
         if (presupuestoActual != null) {
             Cuenta cuenta = presupuestoActual.getCuenta();
-            if (!cuentaRepository.findByIdAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
+            if (!cuentaRepository.findByIdCuentaAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
                     !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para modificar este gasto");
             }
@@ -110,7 +110,7 @@ public class GastoServices {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "El presupuesto con ID " + gastoDto.getIdPresupuesto() + " no se encontró"));
 
             Cuenta cuenta = presupuesto.getCuenta();
-            if (!cuentaRepository.findByIdAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
+            if (!cuentaRepository.findByIdCuentaAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
                     !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para asignar este presupuesto");
             }
@@ -146,7 +146,7 @@ public class GastoServices {
         Presupuesto presupuesto = gasto.getPresupuesto();
         if (presupuesto != null) {
             Cuenta cuenta = presupuesto.getCuenta();
-            if (!cuentaRepository.findByIdAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
+            if (!cuentaRepository.findByIdCuentaAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
                     !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para eliminar este gasto");
             }

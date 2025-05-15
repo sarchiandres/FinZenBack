@@ -1,11 +1,8 @@
 package com.FinZenBack.ws.FinZenBack.models.Entities;
 
-
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +24,7 @@ public class Usuario {
     @Column(name = "contrasena", nullable = false, length = 255)
     private String contrasena;
 
-    @Column(name = "numero_documento", nullable = false, unique = true) // Añadir unique
+    @Column(name = "numero_documento", nullable = false, unique = true)
     private Long numeroDocumento;
 
     @Column(name = "tipo_documento", nullable = false)
@@ -46,7 +43,7 @@ public class Usuario {
     @Column(name = "nombre_usuario", unique = true)
     private String nombreUsuario;
 
-    @Column(name = "tipo_persona")
+    @Column(name = "tipo_persona") // Fixed to match schema
     @Enumerated(EnumType.STRING)
     private TipoPersonaEnum tipoPersona;
 
@@ -60,10 +57,6 @@ public class Usuario {
     @JsonManagedReference
     private List<Cuenta> cuentas = new ArrayList<>();
 
-    // Enumeraciones y getters/setters como en tu código
-
-
-    // Enumeraciones
     public enum TipoDocumentoEnum {
         cedula, pasaporte, tarjeta_de_identidad, cedula_extranjera
     }
@@ -72,108 +65,56 @@ public class Usuario {
         padre_de_familia, joven_profesional, jubilado, personalizado
     }
 
-    // Getters y setters
-    public Long getIdUsuario() {
-        return idUsuario;
-    }
+    // Getters and setters (unchanged)
+    public Long getIdUsuario() { return idUsuario; }
 
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
-    }
+    public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
 
-    public String getNombre() {
-        return nombre;
-    }
+    public String getNombre() { return nombre; }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public String getCorreo() {
-        return correo;
-    }
+    public String getCorreo() { return correo; }
 
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
+    public void setCorreo(String correo) { this.correo = correo; }
 
-    public String getContrasena() {
-        return contrasena;
-    }
+    public String getContrasena() { return contrasena; }
 
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
-    }
+    public void setContrasena(String contrasena) { this.contrasena = contrasena; }
 
-    public Long getNumeroDocumento() {
-        return numeroDocumento;
-    }
+    public Long getNumeroDocumento() { return numeroDocumento; }
 
-    public void setNumeroDocumento(Long numeroDocumento) {
-        this.numeroDocumento = numeroDocumento;
-    }
+    public void setNumeroDocumento(Long numeroDocumento) { this.numeroDocumento = numeroDocumento; }
 
-    public TipoDocumentoEnum getTipoDocumento() {
-        return tipoDocumento;
-    }
+    public TipoDocumentoEnum getTipoDocumento() { return tipoDocumento; }
 
-    public void setTipoDocumento(TipoDocumentoEnum tipoDocumento) {
-        this.tipoDocumento = tipoDocumento;
-    }
+    public void setTipoDocumento(TipoDocumentoEnum tipoDocumento) { this.tipoDocumento = tipoDocumento; }
 
-    public String getPaisResidencia() {
-        return paisResidencia;
-    }
+    public String getPaisResidencia() { return paisResidencia; }
+    public void setPaisResidencia(String paisResidencia) { this.paisResidencia = paisResidencia; }
 
-    public void setPaisResidencia(String paisResidencia) {
-        this.paisResidencia = paisResidencia;
-    }
+    public Long getIngresoMensual() { return ingresoMensual; }
 
-    public Long getIngresoMensual() {
-        return ingresoMensual;
-    }
+    public void setIngresoMensual(Long ingresoMensual) { this.ingresoMensual = ingresoMensual; }
 
-    public void setIngresoMensual(Long ingresoMensual) {
-        this.ingresoMensual = ingresoMensual;
-    }
+    public Boolean getMetaActual() { return metaActual; }
 
-    public Boolean getMetaActual() {
-        return metaActual;
-    }
+    public void setMetaActual(Boolean metaActual) { this.metaActual = metaActual; }
 
-    public void setMetaActual(Boolean metaActual) {
-        this.metaActual = metaActual;
-    }
+    public String getNombreUsuario() { return nombreUsuario; }
 
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
+    public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
 
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
+    public TipoPersonaEnum getTipoPersona() { return tipoPersona; }
 
-    public TipoPersonaEnum getTipoPersona() {
-        return tipoPersona;
-    }
+    public void setTipoPersona(TipoPersonaEnum tipoPersona) { this.tipoPersona = tipoPersona; }
 
-    public void setTipoPersona(TipoPersonaEnum tipoPersona) {
-        this.tipoPersona = tipoPersona;
-    }
+    public TipoUsuario getTipoUsuario() { return tipoUsuario; }
 
-    public TipoUsuario getTipoUsuario() {
-        return tipoUsuario;
-    }
+    public void setTipoUsuario(TipoUsuario tipoUsuario) { this.tipoUsuario = tipoUsuario; }
 
-    public void setTipoUsuario(TipoUsuario tipoUsuario) {
-        this.tipoUsuario = tipoUsuario;
-    }
+    public List<Cuenta> getCuentas() { return cuentas; }
 
-    public List<Cuenta> getCuentas() {
-        return cuentas;
-    }
+    public void setCuentas(List<Cuenta> cuentas) { this.cuentas = cuentas; }
 
-    public void setCuentas(List<Cuenta> cuentas) {
-        this.cuentas = cuentas;
-    }
 }

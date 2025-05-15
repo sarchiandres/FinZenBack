@@ -32,7 +32,7 @@ public class DeudaServices {
         Cuenta cuenta = cuentaRepository.findById(deudaDto.getIdCuenta())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cuenta no encontrada"));
 
-        if (!cuentaRepository.findByIdAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
+        if (!cuentaRepository.findByIdCuentaAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
                 !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para crear una deuda en esta cuenta");
         }
@@ -59,7 +59,7 @@ public class DeudaServices {
         Cuenta cuenta = cuentaRepository.findById(idCuenta)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cuenta no encontrada"));
 
-        if (!cuentaRepository.findByIdAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
+        if (!cuentaRepository.findByIdCuentaAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
                 !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver las deudas de esta cuenta");
         }
@@ -76,7 +76,7 @@ public class DeudaServices {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Deuda no encontrada"));
 
         Cuenta cuentaActual = deuda.getCuenta();
-        if (!cuentaRepository.findByIdAndUsuarioCorreo(cuentaActual.getIdCuenta(), correoUsuario).isPresent() &&
+        if (!cuentaRepository.findByIdCuentaAndUsuarioCorreo(cuentaActual.getIdCuenta(), correoUsuario).isPresent() &&
                 !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para modificar esta deuda");
         }
@@ -84,7 +84,7 @@ public class DeudaServices {
         Cuenta cuenta = cuentaRepository.findById(deudaDto.getIdCuenta())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cuenta no encontrada"));
 
-        if (!cuentaRepository.findByIdAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
+        if (!cuentaRepository.findByIdCuentaAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
                 !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para asignar esta cuenta");
         }
@@ -111,7 +111,7 @@ public class DeudaServices {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Deuda no encontrada"));
 
         Cuenta cuenta = deuda.getCuenta();
-        if (!cuentaRepository.findByIdAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
+        if (!cuentaRepository.findByIdCuentaAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
                 !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para eliminar esta deuda");
         }

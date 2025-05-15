@@ -7,6 +7,7 @@ import com.FinZenBack.ws.FinZenBack.repository.CuentaRepository;
 import com.FinZenBack.ws.FinZenBack.repository.UsuarioRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,26 +27,21 @@ public class CuentaService {
 
     @Transactional
     public Cuenta createCuenta(CuentaDto cuentaDto) {
-        // Validar idUsuario
         if (cuentaDto.getIdUsuario() == null) {
             throw new IllegalArgumentException("ID de usuario no proporcionado");
         }
 
-        // Validar unicidad del nombre de la cuenta para el usuario
-        if (cuentaRepository.existsByNombreAndUsuarioId(cuentaDto.getNombre(), cuentaDto.getIdUsuario())) {
+        if (cuentaRepository.existsByNombreAndUsuarioIdUsuario(cuentaDto.getNombre(), cuentaDto.getIdUsuario())) {
             throw new IllegalArgumentException("Ya existe una cuenta con el nombre " + cuentaDto.getNombre() + " para este usuario");
         }
 
-        // Validar monedaPredeterminada (puedes añadir más códigos según necesidad)
         if (!List.of("USD", "COP", "EUR").contains(cuentaDto.getMonedaPredeterminada())) {
             throw new IllegalArgumentException("Moneda predeterminada inválida: " + cuentaDto.getMonedaPredeterminada());
         }
 
-        // Obtener usuario
         Usuario usuario = usuarioRepository.findById(cuentaDto.getIdUsuario())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario con ID " + cuentaDto.getIdUsuario() + " no encontrado"));
 
-        // Verificar permisos
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String correoAutenticado = authentication.getName();
         if (!correoAutenticado.equals(usuario.getCorreo()) && !authentication.getAuthorities().stream()
@@ -58,7 +54,7 @@ public class CuentaService {
         cuenta.setMonedaPredeterminada(cuentaDto.getMonedaPredeterminada());
         cuenta.setMonto(cuentaDto.getMonto());
         cuenta.setMontoOcupado(BigDecimal.ZERO);
-        cuenta.setMontoLibre(cuentaDto.getMonto()); // Inicialmente, montoLibre = monto
+        cuenta.setMontoLibre(cuentaDto.getMonto());
         cuenta.setUsuario(usuario);
 
         return cuentaRepository.save(cuenta);
@@ -66,11 +62,9 @@ public class CuentaService {
 
     @Transactional(readOnly = true)
     public List<Cuenta> getCuentasByUsuario(Long idUsuario) {
-        // Validar usuario
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario con ID " + idUsuario + " no encontrado"));
 
-        // Verificar permisos
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String correoAutenticado = authentication.getName();
         if (!correoAutenticado.equals(usuario.getCorreo()) && !authentication.getAuthorities().stream()
@@ -78,7 +72,7 @@ public class CuentaService {
             throw new SecurityException("No tienes permiso para ver las cuentas de este usuario");
         }
 
-        return cuentaRepository.findByUsuario_IdUsuario(idUsuario);
+        return cuentaRepository.findByUsuarioIdUsuario(idUsuario);
     }
 
     @Transactional
@@ -86,7 +80,6 @@ public class CuentaService {
         Cuenta cuenta = cuentaRepository.findById(idCuenta)
                 .orElseThrow(() -> new IllegalArgumentException("Cuenta con ID " + idCuenta + " no encontrada"));
 
-        // Verificar permisos
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String correoAutenticado = authentication.getName();
         if (!correoAutenticado.equals(cuenta.getUsuario().getCorreo()) && !authentication.getAuthorities().stream()
@@ -94,23 +87,19 @@ public class CuentaService {
             throw new SecurityException("No tienes permiso para modificar esta cuenta");
         }
 
-        // Validar unicidad del nombre (si cambia)
         if (!cuenta.getNombre().equals(cuentaDto.getNombre()) &&
-                cuentaRepository.existsByNombreAndUsuarioId(cuentaDto.getNombre(), cuenta.getUsuario().getIdUsuario())) {
+                cuentaRepository.existsByNombreAndUsuarioIdUsuario(cuentaDto.getNombre(), cuenta.getUsuario().getIdUsuario())) {
             throw new IllegalArgumentException("Ya existe una cuenta con el nombre " + cuentaDto.getNombre() + " para este usuario");
         }
 
-        // Validar monedaPredeterminada
         if (!List.of("USD", "COP", "EUR").contains(cuentaDto.getMonedaPredeterminada())) {
             throw new IllegalArgumentException("Moneda predeterminada inválida: " + cuentaDto.getMonedaPredeterminada());
         }
 
-        // Actualizar campos
         cuenta.setNombre(cuentaDto.getNombre());
         cuenta.setMonedaPredeterminada(cuentaDto.getMonedaPredeterminada());
         if (cuentaDto.getMonto() != null) {
             cuenta.setMonto(cuentaDto.getMonto());
-            // Recalcular montoLibre (monto - montoOcupado)
             cuenta.setMontoLibre(cuentaDto.getMonto().subtract(cuenta.getMontoOcupado()));
         }
 
@@ -122,7 +111,6 @@ public class CuentaService {
         Cuenta cuenta = cuentaRepository.findById(idCuenta)
                 .orElseThrow(() -> new IllegalArgumentException("Cuenta con ID " + idCuenta + " no encontrada"));
 
-        // Verificar permisos
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String correoAutenticado = authentication.getName();
         if (!correoAutenticado.equals(cuenta.getUsuario().getCorreo()) && !authentication.getAuthorities().stream()
@@ -131,5 +119,9 @@ public class CuentaService {
         }
 
         cuentaRepository.delete(cuenta);
+    }
+
+    public boolean isCuentaOwner(Long idCuenta, UserDetails principal) {
+        return cuentaRepository.findByIdCuentaAndUsuarioCorreo(idCuenta, principal.getUsername()).isPresent();
     }
 }

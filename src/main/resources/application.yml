@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/finzenback
+    url: jdbc:mysql://localhost:3306/FinZen
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -28,15 +28,6 @@ spring:
 app:
   jwtSecret: jwtSecret:K7gH8mP0vC9dT5rX2bQ1zU6nM4pS3eL0fW8yD2tR5aV7bG1kQ9hX6cJ4mN5yE3pB
   jwtExpirationMs: 3600000 # 1 hora
-
-# Configuración de logging
-  # logging:
-    # level:
-    #  org.hibernate.SQL: debug
-    # org.hibernate.type.descriptor.sql.BasicBinder: trace
-    # org.springframework.web: debug
-    # org.springframework.security: debug # Para depurar Spring Security
-    # com.FinZenBack: debug # Para tus clases personalizadas
 
 # Configuración del servidor
   #server:

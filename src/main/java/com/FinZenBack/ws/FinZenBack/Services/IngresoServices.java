@@ -38,7 +38,7 @@ public class IngresoServices {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Presupuesto no encontrado"));
 
         Cuenta cuenta = presupuesto.getCuenta();
-        if (!cuentaRepository.findByIdAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
+        if (!cuentaRepository.findByIdCuentaAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
                 !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para crear un ingreso en este presupuesto");
         }
@@ -62,7 +62,7 @@ public class IngresoServices {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Presupuesto no encontrado"));
 
         Cuenta cuenta = presupuesto.getCuenta();
-        if (!cuentaRepository.findByIdAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
+        if (!cuentaRepository.findByIdCuentaAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
                 !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver los ingresos de este presupuesto");
         }
@@ -79,7 +79,7 @@ public class IngresoServices {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ingreso no encontrado"));
 
         Cuenta cuenta = ingreso.getPresupuesto().getCuenta();
-        if (!cuentaRepository.findByIdAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
+        if (!cuentaRepository.findByIdCuentaAndUsuarioCorreo(cuenta.getIdCuenta(), correoUsuario).isPresent() &&
                 !authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para eliminar este ingreso");
         }

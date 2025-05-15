@@ -30,19 +30,19 @@ public class CuentaController {
     }
 
     @GetMapping(value = "/usuario/{idUsuario}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal == @usuarioRepository.findById(#idUsuario).map(u -> u.correo).orElse('')")
     public ResponseEntity<List<Cuenta>> getCuentasByUsuario(@PathVariable Long idUsuario) {
         return ResponseEntity.ok(cuentaService.getCuentasByUsuario(idUsuario));
     }
 
     @PutMapping(value = "/{idCuenta}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @cuentaService.isCuentaOwner(#idCuenta, authentication.principal)")
     public ResponseEntity<Cuenta> updateCuenta(@PathVariable Long idCuenta, @Valid @RequestBody CuentaDto cuentaDto) {
         return ResponseEntity.ok(cuentaService.updateCuenta(idCuenta, cuentaDto));
     }
 
     @DeleteMapping(value = "/{idCuenta}", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @cuentaService.isCuentaOwner(#idCuenta, authentication.principal)")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> deleteCuenta(@PathVariable Long idCuenta) {
         cuentaService.deleteCuenta(idCuenta);

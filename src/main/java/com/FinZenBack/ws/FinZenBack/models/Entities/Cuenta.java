@@ -1,19 +1,8 @@
 package com.FinZenBack.ws.FinZenBack.models.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
-import lombok.Data;
-
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
-@Data
 @Entity
 @Table(name = "cuenta")
 public class Cuenta {
@@ -24,52 +13,28 @@ public class Cuenta {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario", nullable = false)
-    @JsonIgnore
     private Usuario usuario;
 
-    @NotBlank
-    @Size(min = 3, max = 100)
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @Column(name = "fecha_creacion", nullable = false)
-    private LocalDateTime fechaCreacion = LocalDateTime.now();
-
-    @NotBlank
-    @Size(min = 3, max = 3)
-    @Column(name = "moneda_predeterminada", nullable = false, length = 3)
+    @Column(name = "moneda_predeterminada")
     private String monedaPredeterminada;
 
-    @PositiveOrZero
-    @Column(name = "monto", nullable = false)
-    private BigDecimal monto = BigDecimal.ZERO;
+    @Column(name = "monto")
+    private BigDecimal monto;
 
-    @PositiveOrZero
-    @Column(name = "monto_ocupado", nullable = false)
-    private BigDecimal montoOcupado = BigDecimal.ZERO;
+    @Column(name = "monto_ocupado")
+    private BigDecimal montoOcupado;
 
-    @PositiveOrZero
-    @Column(name = "monto_libre", nullable = false)
-    private BigDecimal montoLibre = BigDecimal.ZERO;
+    @Column(name = "monto_libre")
+    private BigDecimal montoLibre;
 
-    @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<Meta> metas = new ArrayList<>();
-
-    @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<Deuda> deudas = new ArrayList<>();
-
-    @OneToMany(mappedBy = "cuenta", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<Presupuesto> presupuestos = new ArrayList<>();
-    // Getters y setters
-
-    public long getIdCuenta() {
+    public Long getIdCuenta() {
         return idCuenta;
     }
 
-    public void setIdCuenta(long idCuenta) {
+    public void setIdCuenta(Long idCuenta) {
         this.idCuenta = idCuenta;
     }
 
@@ -87,14 +52,6 @@ public class Cuenta {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
     }
 
     public String getMonedaPredeterminada() {
@@ -128,22 +85,4 @@ public class Cuenta {
     public void setMontoLibre(BigDecimal montoLibre) {
         this.montoLibre = montoLibre;
     }
-
-    public List<Meta> getMetas() {
-        return metas;
-    }
-
-    public void setMetas(List<Meta> metas) {
-        this.metas = metas;
-    }
-
-    public List<Deuda> getDeudas() {
-        return deudas;
-    }
-
-    public void setDeudas(List<Deuda> deudas) {
-        this.deudas = deudas;
-    }
 }
-
-

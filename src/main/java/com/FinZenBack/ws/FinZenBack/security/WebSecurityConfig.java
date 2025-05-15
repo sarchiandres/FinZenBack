@@ -27,17 +27,19 @@ import java.util.List;
 public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
-    private final AuthTokenFilter authTokenFilter;
 
     @Value("${cors.allowed-origins:http://localhost:3000}")
     private String allowedOrigins;
 
     public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,
-                             AuthEntryPointJwt unauthorizedHandler,
-                             AuthTokenFilter authTokenFilter) {
+                             AuthEntryPointJwt unauthorizedHandler) {
         this.userDetailsService = userDetailsService;
         this.unauthorizedHandler = unauthorizedHandler;
-        this.authTokenFilter = authTokenFilter;
+    }
+
+    @Bean
+    public AuthTokenFilter authenticationJwtTokenFilter() {
+        return new AuthTokenFilter();
     }
 
     @Bean
@@ -78,11 +80,8 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
                         .requestMatchers("/finzen/auth/**").permitAll()
-                        // Admin-only endpoints
                         .requestMatchers("/finzen/categoria-presupuesto/**").hasRole("ADMIN")
-                        // Authenticated endpoints with ownership checks in service layer
                         .requestMatchers("/finzen/presupuesto/**").authenticated()
                         .requestMatchers("/finzen/informes/**").authenticated()
                         .requestMatchers("/finzen/ingresos/**").authenticated()
@@ -90,15 +89,12 @@ public class WebSecurityConfig {
                         .requestMatchers("/finzen/deuda/**").authenticated()
                         .requestMatchers("/finzen/gasto/**").authenticated()
                         .requestMatchers("/finzen/soporte/**").authenticated()
-                        // Future analytics endpoints (admin-only or role-based)
                         .requestMatchers("/finzen/analytics/**").hasRole("ADMIN")
-                        // Actuator endpoints (if used)
                         .requestMatchers("/actuator/**").hasRole("ADMIN")
-                        // All other requests require authentication
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
