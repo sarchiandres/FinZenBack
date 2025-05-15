@@ -2,52 +2,64 @@ package com.FinZenBack.ws.FinZenBack.models.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="DEUDA")
-
+@Table(name = "DEUDA")
 public class Deuda {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idDeuda;
+    @Column(name = "id_deuda")
+    private Long idDeuda;
 
-    @ManyToOne
-    @JoinColumn(name="id_cuenta",nullable = false)
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_cuenta", nullable = false)
     @JsonBackReference
     private Cuenta cuenta;
 
-
-    @Column (name="monto")
+    @NotNull
+    @Positive
+    @Column(name = "monto", nullable = false)
     private BigDecimal monto;
 
-    @Column(name="monto_pagado")
+    @NotNull
+    @PositiveOrZero
+    @Column(name = "monto_pagado", nullable = false)
     private BigDecimal montoPagado;
 
-    @Column(name="fecha_vencimiento")
+    @NotNull
+    @Column(name = "fecha_vencimiento", nullable = false)
     private LocalDate fechaVencimiento;
 
-    @Column(name="estado")
-    private EstadoDeuda estado;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false)
+    private EstadoDeuda estado = EstadoDeuda.pendiente;
 
-     @Column(name="fecha_creacion")
-     private LocalDateTime fechaCreacion;
+    @Column(name = "fecha_creacion", nullable = false)
+    private LocalDateTime fechaCreacion;
 
-
-    public enum EstadoDeuda {
-        pendiente,
-        pagada
+    @PrePersist
+    protected void onCreate() {
+        fechaCreacion = LocalDateTime.now();
     }
 
-    public long getIdDeuda() {
+    public enum EstadoDeuda {
+        pendiente, pagada
+    }
+
+    public Long getIdDeuda() {
         return idDeuda;
     }
 
-    public void setIdDeuda(long idDeuda) {
+    public void setIdDeuda(Long idDeuda) {
         this.idDeuda = idDeuda;
     }
 

@@ -1,11 +1,19 @@
 package com.FinZenBack.ws.FinZenBack.models.DTO;
 
-public class InformeDto {
-    private String titulo;
-    private String contenido;
-    private Long idUsuario;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
-    // Getters y Setters
+public class InformeDto {
+    @NotBlank
+    @Size(max = 150)
+    private String titulo;
+
+    @Size(max = 5000)
+    private String contenido;
+
+    @NotNull
+    private Long idUsuario;
 
     public String getTitulo() {
         return titulo;

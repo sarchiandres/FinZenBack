@@ -1,35 +1,43 @@
 package com.FinZenBack.ws.FinZenBack.models.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "SOPORTE")
 public class Soporte {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_soporte")
     private Long idSoporte;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario")
+    @JsonBackReference
     private Usuario usuario;
 
-    @Column(name = "fecha_creacion", columnDefinition = "DATETIME")
+    @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
 
-    @Column(name = "asunto", nullable = false, length = 150)
+    @NotBlank
+    @Size(max = 150)
+    @Column(name = "asunto", nullable = false)
     private String asunto;
 
-    @Column(name = "mensaje", nullable = false, columnDefinition = "TEXT")
+    @NotBlank
+    @Size(max = 2000)
+    @Column(name = "mensaje", nullable = false)
     private String mensaje;
 
     @PrePersist
     protected void onCreate() {
-        this.fechaCreacion = LocalDateTime.now();
+        fechaCreacion = LocalDateTime.now();
     }
 
-    // Getters y Setters
     public Long getIdSoporte() {
         return idSoporte;
     }

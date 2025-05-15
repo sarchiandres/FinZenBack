@@ -2,57 +2,53 @@ package com.FinZenBack.ws.FinZenBack.models.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name="INGRESO")
+@Table(name = "INGRESO")
 public class Ingreso {
-    /* id_ingreso BIGINT AUTO_INCREMENT PRIMARY KEY,
-    id_presupuesto BIGINT NOT NULL,
-    monto DECIMAL(15,2) NOT NULL,
-    fecha DATE NOT NULL,
-    fuente VARCHAR(100),
-    FOREIGN KEY (id_presupuesto) REFERENCES PRESUPUESTO(id_presupuesto) ON DELETE CASCADE,
-    CHECK (monto >= 0)
-    */
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idIngreso;
+    @Column(name = "id_ingreso")
+    private Long idIngreso;
 
-    @ManyToOne
-    @JoinColumn(name="id_presupuesto",nullable = false)
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_presupuesto", nullable = false)
     @JsonBackReference
     private Presupuesto presupuesto;
 
-    @Column(name="nombre")
+    @Size(max = 100)
+    @Column(name = "nombre")
     private String nombre;
 
-    @Column(name="monto")
-    private BigDecimal monto ;
+    @NotNull
+    @Positive
+    @Column(name = "monto", nullable = false)
+    private BigDecimal monto;
 
-    @Column(name = "fecha")
+    @NotNull
+    @PastOrPresent
+    @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
 
-    @Column(name="fuente")
+    @Size(max = 100)
+    @Column(name = "fuente")
     private String fuente;
 
-    public long getIdIngreso() {
+    // Getters and Setters
+    public Long getIdIngreso() {
         return idIngreso;
     }
 
-    public void setIdIngreso(long idIngreso) {
+    public void setIdIngreso(Long idIngreso) {
         this.idIngreso = idIngreso;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
     }
 
     public Presupuesto getPresupuesto() {
@@ -61,6 +57,14 @@ public class Ingreso {
 
     public void setPresupuesto(Presupuesto presupuesto) {
         this.presupuesto = presupuesto;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public BigDecimal getMonto() {

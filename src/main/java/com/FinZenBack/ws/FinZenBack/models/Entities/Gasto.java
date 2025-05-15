@@ -2,40 +2,45 @@ package com.FinZenBack.ws.FinZenBack.models.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name="GASTO")
+@Table(name = "GASTO")
 public class Gasto {
-
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id_gasto")
+    @Column(name = "id_gasto")
     private Long idGasto;
 
-    @Column(name="monto")
+    @NotNull
+    @Positive
+    @Column(name = "monto", nullable = false)
     private BigDecimal monto;
 
-    @ManyToOne
-    @JoinColumn(name="id_presupuesto",nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_presupuesto") // Nullable según esquema
     @JsonBackReference
     private Presupuesto presupuesto;
 
-    @ManyToOne
-    @JoinColumn(name="id_categoria")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_categoria")
     @JsonBackReference
     private CategoriaGasto categoria;
 
-    @Column(name="fecha")
+    @NotNull
+    @PastOrPresent
+    @Column(name = "fecha", nullable = false)
     private LocalDate fecha;
 
-    @Column(name="descripcion")
+    @Size(max = 500)
+    @Column(name = "descripcion")
     private String descripcion;
-
 
     public Long getIdGasto() {
         return idGasto;
@@ -69,19 +74,19 @@ public class Gasto {
         this.categoria = categoria;
     }
 
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
     public LocalDate getFecha() {
         return fecha;
     }
 
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 }

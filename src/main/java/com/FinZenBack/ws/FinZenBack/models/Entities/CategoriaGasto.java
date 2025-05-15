@@ -1,46 +1,35 @@
 package com.FinZenBack.ws.FinZenBack.models.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="GASTOCATEGORIA")
+@Table(name = "GASTOCATEGORIA")
 public class CategoriaGasto {
-    /*-- Tabla: GASTOCATEGORIA
-CREATE TABLE GASTOCATEGORIA (
-    id_categoria BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL
-);*/
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id_categoria")
-    private long idCategoria;
+    @Column(name = "id_categoria")
+    private Long idCategoria;
 
-    @Column(name="nombre")
+    @NotBlank
+    @Size(min = 3, max = 100)
+    @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @OneToMany(mappedBy = "categoria" ,cascade = CascadeType.ALL, orphanRemoval = true,
-            fetch = FetchType.LAZY)
-    @JsonIgnore
+    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Gasto> gastos = new ArrayList<>();
 
-
-    public List<Gasto> getGastos() {
-        return gastos;
-    }
-
-    public void setGastos(List<Gasto> gastos) {
-        this.gastos = gastos;
-    }
-
-    public long getIdCategoria() {
+    public Long getIdCategoria() {
         return idCategoria;
     }
 
-    public void setIdCategoria(long idCategoria) {
+    public void setIdCategoria(Long idCategoria) {
         this.idCategoria = idCategoria;
     }
 
@@ -50,5 +39,13 @@ CREATE TABLE GASTOCATEGORIA (
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public List<Gasto> getGastos() {
+        return gastos;
+    }
+
+    public void setGastos(List<Gasto> gastos) {
+        this.gastos = gastos;
     }
 }

@@ -1,34 +1,39 @@
 package com.FinZenBack.ws.FinZenBack.controllers;
 
+import com.FinZenBack.ws.FinZenBack.Services.SoporteServices;
 import com.FinZenBack.ws.FinZenBack.models.DTO.SoporteDto;
 import com.FinZenBack.ws.FinZenBack.models.Entities.Soporte;
-import com.FinZenBack.ws.FinZenBack.Services.SoporteService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/finzen/soportes")
+@RequestMapping("/finzen/soporte")
 public class SoporteController {
 
-    private final SoporteService soporteService;
+    private final SoporteServices soporteServices;
 
-    public SoporteController(SoporteService soporteService) {
-        this.soporteService = soporteService;
+    public SoporteController(SoporteServices soporteServices) {
+        this.soporteServices = soporteServices;
     }
 
-    @PostMapping
-    public Soporte crearSoporte(@RequestBody SoporteDto dto) {
-        return soporteService.createSoporte(dto);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Soporte> crearSoporte(@Valid @RequestBody SoporteDto soporteDto) {
+        Soporte soporte = soporteServices.createSoporte(soporteDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(soporte);
     }
 
-    @GetMapping
-    public List<Soporte> listarSoportes() {
-        return soporteService.getSoportes();
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Soporte>> listarSoportesPorUsuario() {
+        return ResponseEntity.ok(soporteServices.getSoportesByUsuario());
     }
 
-    @GetMapping("/usuario/{idUsuario}")
-    public List<Soporte> listarSoportesPorUsuario(@PathVariable Long idUsuario) {
-        return soporteService.getSoportesByUsuario(idUsuario);
+    @GetMapping(value = "/admin", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Soporte>> listarTodosSoportes() {
+        return ResponseEntity.ok(soporteServices.getAllSoportes());
     }
 }

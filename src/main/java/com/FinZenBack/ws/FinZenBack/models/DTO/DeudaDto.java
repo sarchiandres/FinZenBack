@@ -1,17 +1,32 @@
 package com.FinZenBack.ws.FinZenBack.models.DTO;
-import com.FinZenBack.ws.FinZenBack.models.Entities.Deuda;
+
 import com.FinZenBack.ws.FinZenBack.models.Entities.Deuda.EstadoDeuda;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class DeudaDto {
-
+    @NotNull
     private Long idCuenta;
+
+    @NotNull
+    @Positive
     private BigDecimal monto;
+
+    @NotNull
+    @PositiveOrZero
     private BigDecimal montoPagado;
-    private LocalDate fechaVencimiento ;
-    private EstadoDeuda estado= EstadoDeuda.pendiente;
+
+    @NotNull
+    @FutureOrPresent
+    private LocalDate fechaVencimiento;
+
+    @NotNull
+    private EstadoDeuda estado = EstadoDeuda.pendiente;
 
     public Long getIdCuenta() {
         return idCuenta;

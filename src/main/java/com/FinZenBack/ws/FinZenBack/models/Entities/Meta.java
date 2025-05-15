@@ -2,58 +2,66 @@ package com.FinZenBack.ws.FinZenBack.models.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name="META")
+@Table(name = "META")
 public class Meta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idMeta;
+    @Column(name = "id_meta")
+    private Long idMeta;
 
-    @Column(name = "titulo" ,length = 150)
+    @NotBlank
+    @Size(max = 150)
+    @Column(name = "titulo", nullable = false)
     private String titulo;
 
-    @Column(name= "descripcion")
+    @Size(max = 500)
+    @Column(name = "descripcion")
     private String descripcion;
 
-    @Column(name="fecha_inicio")
+    @NotNull
+    @PastOrPresent
+    @Column(name = "fecha_inicio", nullable = false)
     private LocalDate fechaInicio;
 
-    @Column(name="fecha_limite")
+    @NotNull
+    @FutureOrPresent
+    @Column(name = "fecha_limite", nullable = false)
     private LocalDate fechaLimite;
 
-    @ManyToOne
-    @JoinColumn(name="id_cuenta",nullable = false)
+    @Column(name = "en_progreso", nullable = false)
+    private Boolean enProgreso = true;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false)
+    private EstadoMeta estado = EstadoMeta.creado;
+
+    @PositiveOrZero
+    @Column(name = "valor")
+    private BigDecimal valor;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_cuenta", nullable = false)
     @JsonBackReference
     private Cuenta cuenta;
 
-    @Column(name="en_progreso")
-    private Boolean enProgreso;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name="estado")
-    private EstadoMeta estado = EstadoMeta.creado;
-
-    @Column(name="valor")
-    private BigDecimal valor;
-
-
     public enum EstadoMeta {
-        creado,
-        iniciado,
-        terminado
+        creado, iniciado, terminado
     }
 
-
-
-    public long getIdMeta() {
+    // Getters and Setters
+    public Long getIdMeta() {
         return idMeta;
     }
 
-    public void setIdMeta(long idMeta) {
+    public void setIdMeta(Long idMeta) {
         this.idMeta = idMeta;
     }
 
@@ -89,14 +97,6 @@ public class Meta {
         this.fechaLimite = fechaLimite;
     }
 
-    public Cuenta getCuenta() {
-        return cuenta;
-    }
-
-    public void setCuenta(Cuenta cuenta) {
-        this.cuenta = cuenta;
-    }
-
     public Boolean getEnProgreso() {
         return enProgreso;
     }
@@ -119,5 +119,13 @@ public class Meta {
 
     public void setValor(BigDecimal valor) {
         this.valor = valor;
+    }
+
+    public Cuenta getCuenta() {
+        return cuenta;
+    }
+
+    public void setCuenta(Cuenta cuenta) {
+        this.cuenta = cuenta;
     }
 }

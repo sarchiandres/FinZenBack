@@ -3,6 +3,10 @@ package com.FinZenBack.ws.FinZenBack.controllers;
 import com.FinZenBack.ws.FinZenBack.Services.GastoServices;
 import com.FinZenBack.ws.FinZenBack.models.DTO.GastoDto;
 import com.FinZenBack.ws.FinZenBack.models.Entities.Gasto;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,23 +21,26 @@ public class GastoController {
         this.gastoServices = gastoServices;
     }
 
-    @PostMapping
-    public Gasto crearGasto(@RequestBody GastoDto gastoDto) {
-        return gastoServices.createGasto(gastoDto);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Gasto> crearGasto(@Valid @RequestBody GastoDto gastoDto) {
+        Gasto gasto = gastoServices.createGasto(gastoDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(gasto);
     }
 
-    @GetMapping("/presupuesto/{idPresupuesto}")
-    public List<Gasto> listarGastosPorPresupuesto(@PathVariable Long idPresupuesto) {
-        return gastoServices.getGasto(idPresupuesto);
+    @GetMapping(value = "/presupuesto/{idPresupuesto}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Gasto>> listarGastosPorPresupuesto(@PathVariable Long idPresupuesto) {
+        return ResponseEntity.ok(gastoServices.getGasto(idPresupuesto));
     }
 
-    @PutMapping("/{id}")
-    public Gasto actualizarGasto(@PathVariable Long id, @RequestBody GastoDto gastoDto) {
-        return gastoServices.updateGasto(id, gastoDto);
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Gasto> actualizarGasto(@PathVariable Long id, @Valid @RequestBody GastoDto gastoDto) {
+        Gasto gasto = gastoServices.updateGasto(id, gastoDto);
+        return ResponseEntity.ok(gasto);
     }
 
-    @DeleteMapping("/{id}")
-    public void eliminarGasto(@PathVariable Long id) {
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> eliminarGasto(@PathVariable Long id) {
         gastoServices.deleteGasto(id);
+        return ResponseEntity.noContent().build();
     }
 }

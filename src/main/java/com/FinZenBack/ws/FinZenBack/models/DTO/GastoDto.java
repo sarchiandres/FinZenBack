@@ -1,26 +1,27 @@
 package com.FinZenBack.ws.FinZenBack.models.DTO;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class GastoDto {
-        /*
-    *CREATE TABLE GASTO (
-    id_gasto BIGINT AUTO_INCREMENT PRIMARY KEY,
-    monto DECIMAL(15,2) NOT NULL,
-    id_presupuesto BIGINT,
-    id_categoria BIGINT,
-    fecha DATE NOT NULL,
-    descripcion TEXT,
-    FOREIGN KEY (id_presupuesto) REFERENCES PRESUPUESTO(id_presupuesto) ON DELETE SET NULL,
-    FOREIGN KEY (id_categoria) REFERENCES GASTOCATEGORIA(id_categoria) ON DELETE SET NULL,
-    CHECK (monto >= 0)
-);
-    * */
+    @NotNull
+    @Positive
     private BigDecimal monto;
+
     private Long idPresupuesto;
-    private long idCategoria ;
+
+    private Long idCategoria;
+
+    @NotNull
+    @PastOrPresent
     private LocalDate fecha;
+
+    @Size(max = 500)
     private String descripcion;
 
     public BigDecimal getMonto() {
@@ -39,20 +40,12 @@ public class GastoDto {
         this.idPresupuesto = idPresupuesto;
     }
 
-    public long getIdCategoria() {
+    public Long getIdCategoria() {
         return idCategoria;
     }
 
-    public void setIdCategoria(long idCategoria) {
+    public void setIdCategoria(Long idCategoria) {
         this.idCategoria = idCategoria;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
     }
 
     public LocalDate getFecha() {
@@ -61,5 +54,13 @@ public class GastoDto {
 
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 }
