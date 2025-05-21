@@ -48,7 +48,7 @@ public class Usuario {
     private TipoPersonaEnum tipoPersona;
 
     @ManyToOne
-    @JoinColumn(name = "id_tipousuario", nullable = false)
+    @JoinColumn(name = "tipoUsuario", nullable = false) // Changed to match the actual column name in USUARIO
     @JsonIgnore
     private TipoUsuario tipoUsuario;
 

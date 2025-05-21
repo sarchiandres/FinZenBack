@@ -7,15 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "tipo_usuario") // Cambiar a minúsculas con guion bajo
+@Table(name = "TIPOUSUARIO") // Corrected to match database schema
 public class TipoUsuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_tipo_usuario") // Ajustar nombre de columna
+    @Column(name = "id_tipousuario") // Corrected to match database schema
     private Long idTipoUsuario;
 
-    @Column(name = "nombre", nullable = false, unique = true) // Añadir restricciones
+    @Column(name = "nombre", nullable = false, unique = true)
     private String nombre;
 
     @OneToMany(mappedBy = "tipoUsuario", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -23,7 +23,7 @@ public class TipoUsuario {
     @JsonManagedReference
     private List<Usuario> usuarios = new ArrayList<>();
 
-    // Getters y setters
+    // Getters and setters
     public Long getIdTipoUsuario() {
         return idTipoUsuario;
     }
