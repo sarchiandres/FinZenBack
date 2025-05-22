@@ -1,16 +1,22 @@
 package com.FinZenBack.ws.FinZenBack.controllers;
 
+import com.FinZenBack.ws.FinZenBack.Services.EmailService;
+import com.FinZenBack.ws.FinZenBack.models.Entities.PasswordResetToken;
 import com.FinZenBack.ws.FinZenBack.models.Entities.TipoUsuario;
 import com.FinZenBack.ws.FinZenBack.models.Entities.Usuario;
+import com.FinZenBack.ws.FinZenBack.payload.ForgotPasswordRequest;
 import com.FinZenBack.ws.FinZenBack.payload.LoginRequest;
+import com.FinZenBack.ws.FinZenBack.payload.ResetPasswordRequest;
 import com.FinZenBack.ws.FinZenBack.payload.SignupRequest;
 import com.FinZenBack.ws.FinZenBack.payload.response.JwtResponse;
 import com.FinZenBack.ws.FinZenBack.payload.response.MessageResponse;
+import com.FinZenBack.ws.FinZenBack.repository.PasswordResetTokenRepository;
 import com.FinZenBack.ws.FinZenBack.repository.TipoUsuarioRepository;
 import com.FinZenBack.ws.FinZenBack.repository.UsuarioRepository;
 import com.FinZenBack.ws.FinZenBack.security.jwt.JwtUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,9 +27,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -39,10 +46,16 @@ public class AuthController {
     private TipoUsuarioRepository tipoUsuarioRepository;
 
     @Autowired
+    private PasswordResetTokenRepository passwordResetTokenRepository;
+
+    @Autowired
     private PasswordEncoder encoder;
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
@@ -57,6 +70,15 @@ public class AuthController {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         String role = usuario.getTipoUsuario().getNombre();
+
+        // Enviar correo de confirmación de inicio de sesión
+        try {
+            emailService.sendLoginNotification(usuario.getCorreo(), usuario.getNombre());
+            System.out.println("Correo de notificación de inicio de sesión enviado a: " + usuario.getCorreo());
+        } catch (Exception e) {
+            System.err.println("Error al enviar correo de notificación: " + e.getMessage());
+            // No detener el proceso de login si el correo falla
+        }
 
         return ResponseEntity.ok(new JwtResponse(
                 jwt,
@@ -174,5 +196,73 @@ public class AuthController {
     @GetMapping("/roles")
     public ResponseEntity<?> getRoles() {
         return ResponseEntity.ok(tipoUsuarioRepository.findAll());
+    }
+
+    /**
+     * Endpoint para solicitar restablecimiento de contraseña
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        Optional<Usuario> userOptional = usuarioRepository.findByCorreo(request.getCorreo());
+
+        if (!userOptional.isPresent()) {
+            // No revelamos si el correo existe en la base de datos por seguridad
+            return ResponseEntity.ok(new MessageResponse("Si el correo existe en nuestra base de datos, " +
+                    "recibirás instrucciones para restablecer tu contraseña."));
+        }
+
+        Usuario usuario = userOptional.get();
+
+        // Eliminar tokens existentes para este usuario
+        passwordResetTokenRepository.findByUsuario(usuario).ifPresent(token ->
+                passwordResetTokenRepository.delete(token)
+        );
+
+        // Generar un token de 6 dígitos
+        String token = String.format("%06d", new java.util.Random().nextInt(999999));
+
+        // Guardar el token en la base de datos
+        PasswordResetToken resetToken = new PasswordResetToken(token, usuario);
+        passwordResetTokenRepository.save(resetToken);
+
+        // Enviar correo con el token
+        try {
+            emailService.sendPasswordResetToken(usuario.getCorreo(), usuario.getNombre(), token);
+            System.out.println("Correo de restablecimiento enviado a: " + usuario.getCorreo());
+        } catch (Exception e) {
+            System.err.println("Error al enviar correo de restablecimiento: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new MessageResponse("Error al enviar el correo. Por favor intente más tarde."));
+        }
+
+        return ResponseEntity.ok(new MessageResponse("Se ha enviado un correo con instrucciones para restablecer tu contraseña."));
+    }
+
+    /**
+     * Endpoint para restablecer la contraseña usando el token
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        Optional<PasswordResetToken> tokenOptional = passwordResetTokenRepository.findByToken(request.getToken());
+
+        if (!tokenOptional.isPresent()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Token inválido."));
+        }
+
+        PasswordResetToken resetToken = tokenOptional.get();
+
+        if (resetToken.isExpired()) {
+            passwordResetTokenRepository.delete(resetToken);
+            return ResponseEntity.badRequest().body(new MessageResponse("El token ha expirado."));
+        }
+
+        Usuario usuario = resetToken.getUsuario();
+        usuario.setContrasena(encoder.encode(request.getNuevaContrasena()));
+        usuarioRepository.save(usuario);
+
+        // Eliminar el token después de usarlo
+        passwordResetTokenRepository.delete(resetToken);
+
+        return ResponseEntity.ok(new MessageResponse("Contraseña restablecida con éxito."));
     }
 }

@@ -28,7 +28,7 @@ public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
 
-    @Value("${cors.allowed-origins:http://localhost:3000}")
+    @Value("${cors.allowed-origins:http://localhost:5173}")
     private String allowedOrigins;
 
     public WebSecurityConfig(UserDetailsServiceImpl userDetailsService,

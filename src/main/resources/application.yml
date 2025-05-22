@@ -11,6 +11,25 @@ spring:
       idle-timeout: 300000
       max-lifetime: 1800000
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: finzencompanyco@gmail.com
+    password: ipso ijkp jbco nrfs
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            trust: smtp.gmail.com
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+        debug: true  # Cambiar a true solo para debugging
+
   jpa:
     hibernate:
       ddl-auto: update # Cambiar a 'validate' en producción
@@ -26,20 +45,20 @@ spring:
 
 # Configuración de JWT
 app:
-  jwtSecret: jwtSecret:K7gH8mP0vC9dT5rX2bQ1zU6nM4pS3eL0fW8yD2tR5aV7bG1kQ9hX6cJ4mN5yE3pB
+  jwtSecret: K7gH8mP0vC9dT5rX2bQ1zU6nM4pS3eL0fW8yD2tR5aV7bG1kQ9hX6cJ4mN5yE3pB
   jwtExpirationMs: 3600000 # 1 hora
 
 # Configuración del servidor
-  #server:
-    #  port: 8080
-    #  error:
-    #    include-message: always # Mostrar mensajes de error en las respuestas
-    #   include-binding-errors: always
-    #  include-stacktrace: on_param # Mostrar stacktrace si se pasa ?trace=true
+# server:
+#   port: 8080
+#   error:
+#     include-message: always # Mostrar mensajes de error en las respuestas
+#     include-binding-errors: always
+#     include-stacktrace: on_param # Mostrar stacktrace si se pasa ?trace=true
 
 # Configuración de CORS (opcional, si no usas @CrossOrigin en controladores)
-  cors:
-  allowed-origins: "*" # Cambiar a dominios específicos en producción
+cors:
+  allowed-origins: "*"
   allowed-methods: GET,POST,PUT,DELETE,OPTIONS
   allowed-headers: "*"
   allow-credentials: true
