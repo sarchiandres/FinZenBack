@@ -7,6 +7,7 @@ import com.FinZenBack.ws.FinZenBack.models.Entities.Usuario;
 import com.FinZenBack.ws.FinZenBack.repository.TipoUsuarioRepository;
 import com.FinZenBack.ws.FinZenBack.repository.UsuarioRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -16,12 +17,12 @@ public class UsuarioServices {
 
     private final UsuarioRepository usuarioRepository;
     private final TipoUsuarioRepository tipoUsuarioRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public UsuarioServices(
             UsuarioRepository usuarioRepository,
             TipoUsuarioRepository tipoUsuarioRepository,
-            BCryptPasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.tipoUsuarioRepository = tipoUsuarioRepository;
         this.passwordEncoder = passwordEncoder;
