@@ -62,7 +62,7 @@ public class Usuario {
     }
 
     public enum TipoPersonaEnum {
-        padre_de_familia, joven_profesional, jubilado, personalizado
+        padre_de_familia, joven_profesional, jubilado, personalizado,emprendedor
     }
 
     // Getters and setters (unchanged)
