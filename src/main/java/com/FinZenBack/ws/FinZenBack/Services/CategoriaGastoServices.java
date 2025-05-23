@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoriaGastoServices {
@@ -21,7 +22,7 @@ public class CategoriaGastoServices {
     }
 
     @Transactional
-    public CategoriaGasto createCategoria(CategoriaGastoDto categoriaDto) {
+    public CategoriaGastoDto createCategoria(CategoriaGastoDto categoriaDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo administradores pueden crear categorías de gasto");
@@ -36,11 +37,13 @@ public class CategoriaGastoServices {
 
         CategoriaGasto categoria = new CategoriaGasto();
         categoria.setNombre(categoriaDto.getNombre());
-        return categoriaGastoRepository.save(categoria);
+        categoria = categoriaGastoRepository.save(categoria);
+
+        return new CategoriaGastoDto(categoria.getIdCategoria(), categoria.getNombre());
     }
 
     @Transactional
-    public CategoriaGasto updateCategoria(Long idCategoria, CategoriaGastoDto categoriaDto) {
+    public CategoriaGastoDto updateCategoria(Long idCategoria, CategoriaGastoDto categoriaDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo administradores pueden actualizar categorías de gasto");
@@ -58,12 +61,16 @@ public class CategoriaGastoServices {
         }
 
         categoria.setNombre(categoriaDto.getNombre());
-        return categoriaGastoRepository.save(categoria);
+        categoria = categoriaGastoRepository.save(categoria);
+
+        return new CategoriaGastoDto(categoria.getIdCategoria(), categoria.getNombre());
     }
 
     @Transactional(readOnly = true)
-    public List<CategoriaGasto> getCategorias() {
-        return categoriaGastoRepository.findAll();
+    public List<CategoriaGastoDto> getCategorias() {
+        return categoriaGastoRepository.findAll().stream()
+                .map(categoria -> new CategoriaGastoDto(categoria.getIdCategoria(), categoria.getNombre()))
+                .collect(Collectors.toList());
     }
 
     @Transactional

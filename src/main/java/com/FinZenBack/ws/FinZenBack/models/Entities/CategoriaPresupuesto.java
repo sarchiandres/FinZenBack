@@ -1,5 +1,6 @@
 package com.FinZenBack.ws.FinZenBack.models.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -22,7 +23,7 @@ public class CategoriaPresupuesto {
     private String nombre;
 
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
+    @JsonIgnore
     private List<Presupuesto> presupuestos = new ArrayList<>();
 
     public Long getIdCategoria() {

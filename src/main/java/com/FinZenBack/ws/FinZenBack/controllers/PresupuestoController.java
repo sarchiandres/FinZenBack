@@ -20,26 +20,39 @@ public class PresupuestoController {
         this.presupuestoServices = presupuestoServices;
     }
 
+    // PresupuestoController.java
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Presupuesto> crearPresupuesto(@Valid @RequestBody PresupuestoDto presupuestoDto) {
+    public ResponseEntity<PresupuestoDto> crearPresupuesto(@Valid @RequestBody PresupuestoDto presupuestoDto) {
         Presupuesto presupuesto = presupuestoServices.createPresupuesto(presupuestoDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(presupuesto);
+        PresupuestoDto responseDto = mapToDto(presupuesto); // Convert to DTO
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Presupuesto> actualizarPresupuesto(@PathVariable Long id, @Valid @RequestBody PresupuestoDto presupuestoDto) {
+    public ResponseEntity<PresupuestoDto> actualizarPresupuesto(@PathVariable Long id, @Valid @RequestBody PresupuestoDto presupuestoDto) {
         Presupuesto presupuesto = presupuestoServices.updatePresupuesto(id, presupuestoDto);
-        return ResponseEntity.ok(presupuesto);
+        PresupuestoDto responseDto = mapToDto(presupuesto); // Convert to DTO
+        return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping(value = "/cuenta/{idCuenta}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Presupuesto>> listarPresupuestosPorCuenta(@PathVariable Long idCuenta) {
-        return ResponseEntity.ok(presupuestoServices.getPresupuestos(idCuenta));
+    public ResponseEntity<List<PresupuestoDto>> listarPresupuestosPorCuenta(@PathVariable Long idCuenta) {
+        List<Presupuesto> presupuestos = presupuestoServices.getPresupuestos(idCuenta);
+        List<PresupuestoDto> responseDtos = presupuestos.stream()
+                .map(this::mapToDto)
+                .toList(); // Convert to DTO list
+        return ResponseEntity.ok(responseDtos);
     }
 
-    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> eliminarPresupuesto(@PathVariable Long id) {
-        presupuestoServices.deletePresupuesto(id);
-        return ResponseEntity.noContent().build();
+    // Helper method to map Presupuesto to PresupuestoDto
+    private PresupuestoDto mapToDto(Presupuesto presupuesto) {
+        PresupuestoDto dto = new PresupuestoDto();
+        dto.setNombre(presupuesto.getNombre());
+        dto.setMontoAsignado(presupuesto.getMontoAsignado());
+        dto.setIdCuenta(presupuesto.getCuenta().getIdCuenta());
+        if (presupuesto.getCategoria() != null) {
+            dto.setIdCategoria(presupuesto.getCategoria().getIdCategoria());
+        }
+        return dto;
     }
 }

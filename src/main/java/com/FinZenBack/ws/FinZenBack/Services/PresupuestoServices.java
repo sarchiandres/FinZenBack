@@ -7,6 +7,7 @@ import com.FinZenBack.ws.FinZenBack.models.Entities.Presupuesto;
 import com.FinZenBack.ws.FinZenBack.repository.CategoriaPresupuestoRepository;
 import com.FinZenBack.ws.FinZenBack.repository.CuentaRepository;
 import com.FinZenBack.ws.FinZenBack.repository.PresupuestoRepository;
+import org.hibernate.Hibernate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -121,7 +122,13 @@ public class PresupuestoServices {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para ver los presupuestos de esta cuenta");
         }
 
-        return presupuestoRepository.findByCuentaIdCuenta(idCuenta);
+        List<Presupuesto> presupuestos = presupuestoRepository.findByCuentaIdCuenta(idCuenta);
+        presupuestos.forEach(p -> {
+            if (p.getCategoria() != null) {
+                Hibernate.initialize(p.getCategoria().getPresupuestos());
+            }
+        });
+        return presupuestos;
     }
 
     @Transactional

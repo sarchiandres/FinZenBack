@@ -4,9 +4,23 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class CategoriaGastoDto {
-    @NotBlank
-    @Size(min = 3, max = 100)
+    private Long idCategoria;
     private String nombre;
+
+    public CategoriaGastoDto() {}
+
+    public CategoriaGastoDto(Long idCategoria, String nombre) {
+        this.idCategoria = idCategoria;
+        this.nombre = nombre;
+    }
+
+    public Long getIdCategoria() {
+        return idCategoria;
+    }
+
+    public void setIdCategoria(Long idCategoria) {
+        this.idCategoria = idCategoria;
+    }
 
     public String getNombre() {
         return nombre;
