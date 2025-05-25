@@ -8,8 +8,6 @@ public class LoginRequest {
     @NotBlank
     private String correo;
 
-    @NotBlank
-    private String nombreUsuario;
 
     @NotBlank
     private String contrasena;
@@ -23,13 +21,6 @@ public class LoginRequest {
         this.correo = correo;
     }
 
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
-
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
 
     public String getContrasena() {
         return contrasena;
