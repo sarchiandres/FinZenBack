@@ -1,43 +1,39 @@
-package com.FinZenBack.ws.FinZenBack.models.Entities;
+package com.FinZenBack.ws.FinZenBack.models.DTO;
 
-import jakarta.persistence.*;
+import com.FinZenBack.ws.FinZenBack.models.Entities.Deuda.EstadoDeuda;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "DEUDA")
-public class Deuda {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_deuda")
+public class DeudaDto {
+    @NotNull
+    private Long idCuenta;
 
-
-    @Column(name = "monto", nullable = false)
+    @NotNull
+    @Positive
     private BigDecimal monto;
 
-    @Column(name = "monto_pagado", nullable = false)
+    @NotNull
+    @PositiveOrZero
+    private BigDecimal montoPagado;
 
-    @Column(name = "fecha_vencimiento", nullable = false)
+    @NotNull
+    @FutureOrPresent
     private LocalDate fechaVencimiento;
 
-    @Enumerated(EnumType.STRING)
+    @NotNull
     private EstadoDeuda estado = EstadoDeuda.pendiente;
 
-
-
-    public enum EstadoDeuda {
-        pendiente, pagada
+    public Long getIdCuenta() {
+        return idCuenta;
     }
 
-        return idDeuda;
-    }
-
-        this.idDeuda = idDeuda;
-    }
-
-    }
-
+    public void setIdCuenta(Long idCuenta) {
+        this.idCuenta = idCuenta;
     }
 
     public BigDecimal getMonto() {
@@ -71,12 +67,4 @@ public class Deuda {
     public void setEstado(EstadoDeuda estado) {
         this.estado = estado;
     }
-
-    public LocalDateTime getFechaCreacion() {
-        return fechaCreacion;
-    }
-
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
-    }
+}
